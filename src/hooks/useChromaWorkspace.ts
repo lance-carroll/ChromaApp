@@ -97,6 +97,7 @@ export function useChromaWorkspace() {
   const [spendThreadWithPost, setSpendThreadWithPost] = useState(false);
   const [breatheChoice, setBreatheChoice] = useState<BreatheChoice>("focus");
   const [selectedRecipeId, setSelectedRecipeId] = useState("");
+  const [actFreeform, setActFreeform] = useState(false);
   const [challengeRating, setChallengeRating] = useState(9);
   const [selectedGearIds, setSelectedGearIds] = useState<number[]>([]);
   const [sceneWord, setSceneWord] = useState("");
@@ -223,20 +224,25 @@ export function useChromaWorkspace() {
         .filter(Boolean)
     : [];
 
-  const isCoreEligible =
-    !!selectedCoreWord &&
-    selectedRecipe.coreTags.some((tag) =>
-      selectedCoreTags.includes(tag.toLowerCase()),
-    );
+  const isCoreEligible = actFreeform
+    ? !!selectedCoreWord
+    : !!selectedCoreWord &&
+      selectedRecipe.coreTags.some((tag) =>
+        selectedCoreTags.includes(tag.toLowerCase()),
+      );
 
-  const matchedChromaCount = selectedRecipe.chroma.filter((requiredColor) =>
-    selectedChromaComponents.some((component) => component.color === requiredColor),
-  ).length;
+  const matchedChromaCount = actFreeform
+    ? Math.min(selectedChromaComponents.length, 1)
+    : selectedRecipe.chroma.filter((requiredColor) =>
+        selectedChromaComponents.some((component) => component.color === requiredColor),
+      ).length;
+
+  const requiredChromaCount = actFreeform ? 1 : selectedRecipe.chroma.length;
 
   const actGrade = getActGrade({
     isCoreEligible,
     matchedChromaCount,
-    requiredChromaCount: selectedRecipe.chroma.length,
+    requiredChromaCount,
     spendThreadWithPost,
   });
 
@@ -906,7 +912,7 @@ export function useChromaWorkspace() {
     const cards = selectedCards;
 
     if (postType === "act") {
-      return `Act: ${selectedRecipe.name} at ${actGrade} (+${
+      return `Act: ${actFreeform ? "Freeform" : selectedRecipe.name} at ${actGrade} (+${
         gradeBonus[actGrade]
       }) vs CR ${challengeRating}. Core: ${coreWord?.word ?? "none"}${
         cards.length > 0
@@ -963,7 +969,7 @@ export function useChromaWorkspace() {
     const queuedSummary = postSummary();
 
     if (postType === "act") {
-      if (!hasAvailableRecipes) {
+      if (!actFreeform && !hasAvailableRecipes) {
         setBuilderNotice("Assign at least one recipe to this character before posting an Act.");
         return;
       }
@@ -973,7 +979,7 @@ export function useChromaWorkspace() {
         return;
       }
 
-      if (!isCoreEligible) {
+      if (!actFreeform && !isCoreEligible) {
         setBuilderNotice("Selected Core Word does not match this Recipe's tags.");
         return;
       }
@@ -994,7 +1000,9 @@ export function useChromaWorkspace() {
       }
 
       mechanicsText = buildMechanicsBlock("Act", [
-        `Recipe: ${selectedRecipe.name} (${selectedRecipe.family})`,
+        actFreeform
+          ? "Recipe: none (freeform act)"
+          : `Recipe: ${selectedRecipe.name} (${selectedRecipe.family})`,
         `Core Word: ${selectedCoreWord.word}`,
         `Chroma: ${
           selectedChromaComponents.length > 0
@@ -1028,9 +1036,9 @@ export function useChromaWorkspace() {
       ]);
       mechanicsPayload = {
         post_type: postType,
-        recipe_id: selectedRecipe.id,
-        recipe_name: selectedRecipe.name,
-        recipe_family: selectedRecipe.family,
+        recipe_id: actFreeform ? null : selectedRecipe.id,
+        recipe_name: actFreeform ? null : selectedRecipe.name,
+        recipe_family: actFreeform ? null : selectedRecipe.family,
         core_word_id: selectedCoreWord.id,
         core_word: selectedCoreWord.word,
         core_tags: selectedCoreWord.tags,
@@ -2258,6 +2266,8 @@ export function useChromaWorkspace() {
     setBreatheChoice,
     selectedRecipeId,
     setSelectedRecipeId,
+    actFreeform,
+    setActFreeform,
     challengeRating,
     setChallengeRating,
     selectedGearIds,
@@ -2397,6 +2407,7 @@ export function useChromaWorkspace() {
     selectedCoreTags,
     isCoreEligible,
     matchedChromaCount,
+    requiredChromaCount,
     actGrade,
     activeCampaignCharacters,
     activeCampaignTargetCharacter,

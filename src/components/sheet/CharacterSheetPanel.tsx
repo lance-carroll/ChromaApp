@@ -2,7 +2,7 @@
 
 import type { ChromaWorkspace } from "@/hooks/useChromaWorkspace";
 import { GearList } from "@/components/sheet/GearList";
-import { Counter, CollapsibleSection, TextEntryList } from "@/components/ui";
+import { Counter, CollapsibleSection, Surface, TextEntryList } from "@/components/ui";
 import { colorStyles } from "@/lib/chroma";
 
 export function CharacterSheetPanel(w: ChromaWorkspace) {
@@ -261,7 +261,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
   return (
     <>
         <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
+          <Surface>
             <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,180px)]">
               <label className="grid min-w-0 gap-1">
                 <span className="text-sm font-semibold text-foreground/70">Name</span>
@@ -290,7 +290,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
                 onChange={(event) => setConcept(event.target.value)}
               />
             </label>
-          </div>
+          </Surface>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Counter label="Focus" value={focus} max={3} setValue={setFocus} />
@@ -299,7 +299,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
         </section>
 
         <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
+          <Surface>
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 className="text-lg font-bold">Core Words</h2>
               <span className="text-sm text-foreground/70">{coreWords.length}/4</span>
@@ -336,7 +336,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
                 </div>
               ))}
             </div>
-          </div>
+          </Surface>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
             <label className="grid gap-1 surface-shadow rounded-xl border border-border bg-surface p-5">
@@ -377,7 +377,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
           summary={`${hand.length}/4 in hand, ${deck.length} in deck, ${discard.length} discarded.`}
         >
           <section className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
-            <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
+            <Surface>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 className="text-lg font-bold">Hand</h2>
                 <span className="text-sm text-foreground/70">{hand.length}/4</span>
@@ -395,9 +395,9 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
                   </button>
                 ))}
               </div>
-            </div>
+            </Surface>
 
-            <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
+            <Surface>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 className="text-lg font-bold">Deck</h2>
                 <button
@@ -410,9 +410,9 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
               </div>
               <p className="font-mono text-4xl font-black">{deck.length}</p>
               <p className="mt-2 text-sm text-foreground/70">Cards remaining</p>
-            </div>
+            </Surface>
 
-            <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
+            <Surface>
               <h2 className="mb-3 text-lg font-bold">Discard</h2>
               <div className="flex flex-wrap gap-2">
                 {discard.length === 0 ? (
@@ -428,7 +428,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
                   ))
                 )}
               </div>
-            </div>
+            </Surface>
           </section>
         </CollapsibleSection>
 

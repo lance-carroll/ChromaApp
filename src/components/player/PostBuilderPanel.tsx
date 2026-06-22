@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChromaWorkspace } from "@/hooks/useChromaWorkspace";
-import { Button, CollapsibleSection } from "@/components/ui";
+import { Button, CollapsibleSection, Surface } from "@/components/ui";
 import { chromaNames, colorStyles, getGearDetailText, getGearLabel, gradeBonus, threatBucketByColor } from "@/lib/chroma";
 
 export function PostBuilderPanel(w: ChromaWorkspace) {
@@ -102,6 +102,8 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
     setBreatheChoice,
     selectedRecipeId,
     setSelectedRecipeId,
+    actFreeform,
+    setActFreeform,
     challengeRating,
     setChallengeRating,
     selectedGearIds,
@@ -241,6 +243,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
     selectedCoreTags,
     isCoreEligible,
     matchedChromaCount,
+    requiredChromaCount,
     actGrade,
     activeCampaignCharacters,
     activeCampaignTargetCharacter,
@@ -258,7 +261,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
   } = w;
   return (
     <>
-        <section className="surface-shadow rounded-xl border border-border bg-surface p-5">
+        <Surface as="section">
           <div className="flex flex-col gap-3 border-b border-border pb-4">
             <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -335,60 +338,78 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
               <div className="mt-4 grid gap-3 border border-border bg-white p-3">
                 {postType === "act" ? (
                   <>
-                    {!hasAvailableRecipes ? (
-                      <p className="border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
-                        No recipes are assigned to this character yet. Add one in Workspace.
-                      </p>
-                    ) : null}
-                    <label className="grid gap-1">
-                      <span className="text-sm font-semibold text-foreground/80">
-                        Recipe
-                      </span>
-                      <select
-                        className="min-w-0 border border-border bg-surface px-3 py-2 outline-none focus:border-accent"
-                        value={selectedRecipeId || availableRecipes[0]?.id || ""}
-                        onChange={(event) => setSelectedRecipeId(event.target.value)}
-                        disabled={!hasAvailableRecipes}
-                      >
-                        {availableRecipes.map((recipe) => (
-                          <option key={recipe.id} value={recipe.id}>
-                            {recipe.name} - {recipe.family}
-                          </option>
-                        ))}
-                      </select>
+                    <label className="flex items-center gap-3 text-sm font-semibold text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={actFreeform}
+                        onChange={(event) => setActFreeform(event.target.checked)}
+                      />
+                      Act without a Recipe
                     </label>
-                    <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
-                      <div className="border border-border bg-surface-muted p-3 text-sm text-foreground/80">
-                        <p className="font-bold">{selectedRecipe.family}</p>
-                        <p className="mt-1">
-                          Tags: {selectedRecipe.coreTags.join(", ")}
-                        </p>
-                        <p className="mt-1">
-                          Chroma: {selectedRecipe.chroma.join(" + ")}
-                        </p>
-                      </div>
-                      <label className="grid gap-1">
-                        <span className="text-sm font-semibold text-foreground/80">
-                          Challenge Rating
-                        </span>
-                        <input
-                          className="min-w-0 border border-border bg-surface px-3 py-2 outline-none focus:border-accent"
-                          type="number"
-                          min={7}
-                          max={15}
-                          value={challengeRating}
-                          onChange={(event) =>
-                            setChallengeRating(Number(event.target.value))
-                          }
-                        />
-                      </label>
-                    </div>
+                    {actFreeform ? (
+                      <p className="border border-border bg-surface-muted px-3 py-2 text-sm text-foreground/70">
+                        Freeform Act: any Core Word works, and one matching Chroma source
+                        completes the post.
+                      </p>
+                    ) : (
+                      <>
+                        {!hasAvailableRecipes ? (
+                          <p className="border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
+                            No recipes are assigned to this character yet. Add one in
+                            Workspace, or act without a recipe above.
+                          </p>
+                        ) : null}
+                        <label className="grid gap-1">
+                          <span className="text-sm font-semibold text-foreground/80">
+                            Recipe
+                          </span>
+                          <select
+                            className="min-w-0 border border-border bg-surface px-3 py-2 outline-none focus:border-accent"
+                            value={selectedRecipeId || availableRecipes[0]?.id || ""}
+                            onChange={(event) => setSelectedRecipeId(event.target.value)}
+                            disabled={!hasAvailableRecipes}
+                          >
+                            {availableRecipes.map((recipe) => (
+                              <option key={recipe.id} value={recipe.id}>
+                                {recipe.name} - {recipe.family}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
+                          <div className="border border-border bg-surface-muted p-3 text-sm text-foreground/80">
+                            <p className="font-bold">{selectedRecipe.family}</p>
+                            <p className="mt-1">
+                              Tags: {selectedRecipe.coreTags.join(", ")}
+                            </p>
+                            <p className="mt-1">
+                              Chroma: {selectedRecipe.chroma.join(" + ")}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    <label className="grid max-w-[120px] gap-1">
+                      <span className="text-sm font-semibold text-foreground/80">
+                        Challenge Rating
+                      </span>
+                      <input
+                        className="min-w-0 border border-border bg-surface px-3 py-2 outline-none focus:border-accent"
+                        type="number"
+                        min={7}
+                        max={15}
+                        value={challengeRating}
+                        onChange={(event) =>
+                          setChallengeRating(Number(event.target.value))
+                        }
+                      />
+                    </label>
                     <div className="grid gap-2 text-sm text-foreground/80 sm:grid-cols-3">
                       <span className="border border-border bg-surface-muted px-3 py-2">
                         Core: {isCoreEligible ? "eligible" : "not eligible"}
                       </span>
                       <span className="border border-border bg-surface-muted px-3 py-2">
-                        Chroma: {matchedChromaCount}/{selectedRecipe.chroma.length}
+                        Chroma: {matchedChromaCount}/{requiredChromaCount}
                       </span>
                       <span className="border border-border bg-surface-muted px-3 py-2">
                         Grade: {actGrade} +{gradeBonus[actGrade]}
@@ -422,8 +443,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                           setSpendThreadWithPost(event.target.checked)
                         }
                         disabled={
-                          thread === 0 ||
-                          matchedChromaCount < selectedRecipe.chroma.length
+                          thread === 0 || matchedChromaCount < requiredChromaCount
                         }
                       />
                       Spend 1 Thread to Heighten
@@ -716,7 +736,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
             </div>
           </div>
           </div>
-        </section>
+        </Surface>
 
         <CollapsibleSection
           title="Submitted Posts"
