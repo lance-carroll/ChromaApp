@@ -1,0 +1,38 @@
+{
+  "name": "chroma-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/next/dist/bin/next dev",
+    "build": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/next/dist/bin/next build",
+    "start": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/next/dist/bin/next start",
+    "lint": "eslint",
+    "bot:register": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" bot/register-commands.mjs",
+    "bot:dev": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" bot/index.mjs",
+    "bot:start": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" bot/index.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "discord.js": "^14.26.4",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}
