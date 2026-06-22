@@ -1187,6 +1187,9 @@ export default function Home() {
   const [campaignBusy, setCampaignBusy] = useState(false);
   const [campaignNotice, setCampaignNotice] = useState("");
   const [campaignDraftOpen, setCampaignDraftOpen] = useState(false);
+  const [campaignTargetCharacterId, setCampaignTargetCharacterId] = useState<string | null>(null);
+  const [campaignTargetMarks, setCampaignTargetMarks] = useState<Entry[]>([]);
+  const [campaignTargetWounds, setCampaignTargetWounds] = useState<Entry[]>([]);
   const [playerCampaignNotice, setPlayerCampaignNotice] = useState("");
   const [joinedCampaigns, setJoinedCampaigns] = useState<CampaignRow[]>([]);
   const [joinInviteCode, setJoinInviteCode] = useState("");
@@ -1343,6 +1346,10 @@ export default function Home() {
   });
 
   const activeCampaignCharacters = rosterCharacters;
+  const activeCampaignTargetCharacter =
+    rosterCharacters.find((character) => character.id === campaignTargetCharacterId) ??
+    rosterCharacters[0] ??
+    null;
 
   const activeScene =
     campaignScenes.find((scene) => scene.id === sceneId) ??
@@ -1353,6 +1360,34 @@ export default function Home() {
     campaignBeats.find((beat) => beat.id === beatId) ??
     campaignBeats.find((beat) => beat.is_active) ??
     null;
+
+  useEffect(() => {
+    if (!campaignId) {
+      setCampaignTargetCharacterId(null);
+      setCampaignTargetMarks([]);
+      setCampaignTargetWounds([]);
+      return;
+    }
+
+    const nextTarget =
+      rosterCharacters.find((character) => character.id === campaignTargetCharacterId) ??
+      rosterCharacters[0] ??
+      null;
+
+    if (!nextTarget) {
+      setCampaignTargetCharacterId(null);
+      setCampaignTargetMarks([]);
+      setCampaignTargetWounds([]);
+      return;
+    }
+
+    if (nextTarget.id !== campaignTargetCharacterId) {
+      setCampaignTargetCharacterId(nextTarget.id);
+    }
+
+    setCampaignTargetMarks(nextTarget.marks ?? []);
+    setCampaignTargetWounds(nextTarget.wounds ?? []);
+  }, [campaignId, rosterCharacters, campaignTargetCharacterId]);
 
   const visibleCampaignPosts = campaignId
     ? campaignPosts.filter(
@@ -2330,6 +2365,9 @@ export default function Home() {
   function applyCampaign(campaign: CampaignRow) {
     setCampaignId(campaign.id);
     setCampaignDraftOpen(false);
+    setCampaignTargetCharacterId(null);
+    setCampaignTargetMarks([]);
+    setCampaignTargetWounds([]);
     setCampaignName(campaign.name);
     setCampaignInviteCode(campaign.invite_code);
     setBeatNumber(campaign.beat_number);
@@ -2345,6 +2383,18 @@ export default function Home() {
     if (session) {
       void loadPlayerQueuedPosts(session.user.id);
     }
+  }
+
+  function syncSavedCharacterInCollections(savedCharacter: CharacterRow) {
+    setCharacters((currentCharacters) => [
+      savedCharacter,
+      ...currentCharacters.filter((character) => character.id !== savedCharacter.id),
+    ]);
+    setRosterCharacters((currentCharacters) =>
+      currentCharacters.map((character) =>
+        character.id === savedCharacter.id ? savedCharacter : character,
+      ),
+    );
   }
 
   function getCampaignLabel(id: string) {
@@ -2517,6 +2567,9 @@ export default function Home() {
   function newCampaignDraft() {
     setCampaignId(null);
     setCampaignDraftOpen(true);
+    setCampaignTargetCharacterId(null);
+    setCampaignTargetMarks([]);
+    setCampaignTargetWounds([]);
     setCampaignName("New Campaign");
     setRosterCharacters([]);
     setCampaignPosts([]);
@@ -2560,6 +2613,9 @@ export default function Home() {
     setCampaignScenes([]);
     setCampaignBeats([]);
     setRosterCharacters([]);
+    setCampaignTargetCharacterId(null);
+    setCampaignTargetMarks([]);
+    setCampaignTargetWounds([]);
     setSceneId(null);
     setBeatId(null);
     setCampaignId(null);
@@ -2617,6 +2673,111 @@ export default function Home() {
         .update({ threat: nextThreat })
         .eq("id", campaignId);
     }
+  }
+
+  function clampChallengeRating(nextRating: number) {
+    return Math.max(7, Math.min(15, nextRating));
+  }
+
+  async function saveCampaignChallengeRating(nextRating: number) {
+    const clampedRating = clampChallengeRating(nextRating);
+    setChallengeRating(clampedRating);
+
+    if (!campaignId) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("campaigns")
+      .update({ default_cr: clampedRating })
+      .eq("id", campaignId);
+
+    if (error) {
+      setCampaignNotice(error.message);
+      return;
+    }
+
+    setCampaignDefaultCr(clampedRating);
+    setCampaigns((currentCampaigns) =>
+      currentCampaigns.map((campaign) =>
+        campaign.id === campaignId
+          ? { ...campaign, default_cr: clampedRating }
+          : campaign,
+      ),
+    );
+    setCampaignNotice(`Campaign default challenge set to ${clampedRating}.`);
+  }
+
+  async function saveSceneChallengeRating(nextRating: number) {
+    const clampedRating = clampChallengeRating(nextRating);
+    setChallengeRating(clampedRating);
+    setCampaignDefaultCr(clampedRating);
+
+    if (!campaignId || !sceneId) {
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("campaign_scenes")
+      .update({ default_cr: clampedRating })
+      .eq("id", sceneId)
+      .select("*")
+      .single();
+
+    if (error) {
+      setCampaignNotice(error.message);
+      return;
+    }
+
+    const savedScene = data as CampaignSceneRow;
+    setCampaignScenes((currentScenes) =>
+      currentScenes.map((scene) =>
+        scene.id === savedScene.id ? savedScene : scene,
+      ),
+    );
+    setCampaignNotice(`Scene default challenge set to ${clampedRating}.`);
+  }
+
+  async function saveCampaignTargetConditions() {
+    if (!campaignTargetCharacterId) {
+      setCampaignNotice("Select a roster character first.");
+      return;
+    }
+
+    const targetCharacter = rosterCharacters.find(
+      (character) => character.id === campaignTargetCharacterId,
+    );
+
+    if (!targetCharacter) {
+      setCampaignNotice("That roster character could not be found.");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("characters")
+      .update({
+        marks: campaignTargetMarks,
+        wounds: campaignTargetWounds,
+      })
+      .eq("id", campaignTargetCharacterId)
+      .select("*")
+      .single();
+
+    if (error) {
+      setCampaignNotice(error.message);
+      return;
+    }
+
+    const savedCharacter = data as CharacterRow;
+    syncSavedCharacterInCollections(savedCharacter);
+
+    if (characterId === savedCharacter.id) {
+      applyCharacter(savedCharacter);
+    }
+
+    setCampaignTargetMarks(savedCharacter.marks ?? []);
+    setCampaignTargetWounds(savedCharacter.wounds ?? []);
+    setCampaignNotice(`Updated ${savedCharacter.name}.`);
   }
 
   async function linkCharacterToCampaign() {
@@ -3081,14 +3242,8 @@ export default function Home() {
       await seedSystemRecipesForCharacter((data as CharacterRow).id);
     }
 
+    syncSavedCharacterInCollections(data as CharacterRow);
     applyCharacter(data as CharacterRow);
-    setCharacters((currentCharacters) => {
-      const savedCharacter = data as CharacterRow;
-      const withoutSaved = currentCharacters.filter(
-        (character) => character.id !== savedCharacter.id,
-      );
-      return [savedCharacter, ...withoutSaved];
-    });
     setMessage("Saved.");
   }
 
@@ -3430,13 +3585,6 @@ export default function Home() {
                   <div className="grid gap-2 sm:grid-cols-4">
                     <button
                       type="button"
-                      className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50"
-                      onClick={newCampaignDraft}
-                    >
-                      New
-                    </button>
-                    <button
-                      type="button"
                       className="h-11 border border-red-900 bg-red-900 px-4 font-semibold text-white hover:bg-red-800"
                       onClick={saveCampaign}
                       disabled={campaignBusy}
@@ -3463,35 +3611,154 @@ export default function Home() {
                       {campaignInviteCode ? `Invite ${campaignInviteCode}` : "Save for invite"}
                     </span>
                   </div>
+                  <div className="grid gap-3 border border-stone-200 p-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h3 className="text-sm font-bold uppercase tracking-wide text-stone-600">
+                          Challenge Management
+                        </h3>
+                        <p className="mt-1 text-sm text-stone-600">
+                          Tune the active CR for posting and keep scene defaults in sync.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="h-9 w-9 border border-stone-300 text-lg font-bold hover:bg-stone-50 disabled:opacity-50"
+                          onClick={() => setChallengeRating(clampChallengeRating(challengeRating - 1))}
+                          disabled={challengeRating <= 7}
+                        >
+                          -
+                        </button>
+                        <span className="min-w-16 border border-stone-300 bg-white px-3 py-2 text-center font-mono text-lg font-bold">
+                          {challengeRating}
+                        </span>
+                        <button
+                          type="button"
+                          className="h-9 w-9 border border-stone-300 text-lg font-bold hover:bg-stone-50 disabled:opacity-50"
+                          onClick={() => setChallengeRating(clampChallengeRating(challengeRating + 1))}
+                          disabled={challengeRating >= 15}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <button
+                        type="button"
+                        className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50 disabled:opacity-50"
+                        onClick={() => setChallengeRating(campaignDefaultCr)}
+                      >
+                        Use Campaign Default ({campaignDefaultCr})
+                      </button>
+                      <button
+                        type="button"
+                        className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50 disabled:opacity-50"
+                        onClick={() =>
+                          setChallengeRating(activeScene?.default_cr ?? campaignDefaultCr)
+                        }
+                      >
+                        Use Scene Default ({activeScene?.default_cr ?? campaignDefaultCr})
+                      </button>
+                      <button
+                        type="button"
+                        className="h-11 border border-stone-900 bg-stone-900 px-4 font-semibold text-white hover:bg-stone-700 disabled:opacity-50"
+                        onClick={() => void saveCampaignChallengeRating(challengeRating)}
+                      >
+                        Save Campaign Default
+                      </button>
+                      <button
+                        type="button"
+                        className="h-11 border border-stone-900 bg-stone-900 px-4 font-semibold text-white hover:bg-stone-700 disabled:opacity-50"
+                        onClick={() => void saveSceneChallengeRating(challengeRating)}
+                        disabled={!sceneId}
+                      >
+                        Save Scene Default
+                      </button>
+                    </div>
+                  </div>
                   <div className="border border-stone-200 p-3">
                     <h3 className="text-sm font-bold uppercase tracking-wide text-stone-600">
                       Current Roster
                     </h3>
                     <p className="mt-1 text-sm text-stone-600">
-                      Characters linked to this campaign and available for the active Beat.
+                      Characters linked to this campaign. Click one to edit marks and wounds.
                     </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                       {activeCampaignCharacters.length === 0 ? (
-                        <span className="text-sm text-stone-600">
+                        <span className="text-sm text-stone-600 sm:col-span-2 xl:col-span-3">
                           No sheets linked yet.
                         </span>
                       ) : (
                         activeCampaignCharacters.map((character) => (
-                          <div
+                          <button
+                            type="button"
                             key={`linked-${character.id}`}
-                            className="min-w-[180px] border border-stone-300 bg-stone-50 px-3 py-2"
+                            className={`border px-3 py-2 text-left hover:bg-stone-50 ${
+                              campaignTargetCharacterId === character.id
+                                ? "border-red-900 bg-red-50"
+                                : "border-stone-300 bg-stone-50"
+                            }`}
+                            onClick={() => setCampaignTargetCharacterId(character.id)}
                           >
                             <span className="block text-sm font-bold">
                               {character.name}
                             </span>
                             <span className="mt-1 block text-xs text-stone-600">
-                              F{character.focus} T{character.thread} W{character.wounds.length} H{character.hand.length}
+                              F{character.focus} T{character.thread} M{character.marks.length} W{character.wounds.length}
                             </span>
-                          </div>
+                          </button>
                         ))
                       )}
                     </div>
                   </div>
+                  {activeCampaignTargetCharacter ? (
+                    <div className="grid gap-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <h3 className="text-sm font-bold uppercase tracking-wide text-stone-600">
+                            Condition Editor
+                          </h3>
+                          <p className="mt-1 text-sm text-stone-600">
+                            Editing marks and wounds for {activeCampaignTargetCharacter.name}.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            className="h-10 border border-stone-300 px-3 text-sm font-semibold hover:bg-stone-50"
+                            onClick={() => {
+                              setCampaignTargetMarks(activeCampaignTargetCharacter.marks ?? []);
+                              setCampaignTargetWounds(activeCampaignTargetCharacter.wounds ?? []);
+                            }}
+                          >
+                            Reset
+                          </button>
+                          <button
+                            type="button"
+                            className="h-10 border border-red-900 bg-red-900 px-3 text-sm font-semibold text-white hover:bg-red-800"
+                            onClick={saveCampaignTargetConditions}
+                          >
+                            Save Conditions
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid gap-4 lg:grid-cols-2">
+                        <TextEntryList
+                          title="Marks"
+                          items={campaignTargetMarks}
+                          setItems={setCampaignTargetMarks}
+                          placeholder="shaken, watched, off-balance"
+                        />
+                        <TextEntryList
+                          title="Wounds"
+                          items={campaignTargetWounds}
+                          setItems={setCampaignTargetWounds}
+                          placeholder="black ash, red hunger"
+                        />
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 <div className="mt-4 grid gap-3 border border-stone-200 bg-stone-50 p-3">
