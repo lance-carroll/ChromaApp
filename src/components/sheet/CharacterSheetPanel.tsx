@@ -365,21 +365,22 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
           />
         </section>
 
-        <CollapsibleSection
-          title="Gear"
-          summary={`${gear.length} listed ${gear.length === 1 ? "item" : "items"}.`}
-        >
+        <Surface as="section">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold">Gear</h2>
+            <span className="text-sm text-foreground/70">
+              {gear.length} listed {gear.length === 1 ? "item" : "items"}
+            </span>
+          </div>
           <GearList items={gear} setItems={setGear} />
-        </CollapsibleSection>
+        </Surface>
 
-        <CollapsibleSection
-          title="Cards"
-          summary={`${hand.length}/4 in hand, ${deck.length} in deck, ${discard.length} discarded.`}
-        >
-          <section className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
+        <section className="grid gap-4">
+          <h2 className="text-lg font-bold">Cards</h2>
+          <div className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
             <Surface>
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-bold">Hand</h2>
+                <h3 className="font-bold text-foreground/80">Hand</h3>
                 <span className="text-sm text-foreground/70">{hand.length}/4</span>
               </div>
               <div className="grid gap-2">
@@ -399,7 +400,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
 
             <Surface>
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-bold">Deck</h2>
+                <h3 className="font-bold text-foreground/80">Deck</h3>
                 <button
                   type="button"
                   className="h-9 border border-border px-3 text-sm font-semibold hover:bg-surface-muted"
@@ -413,7 +414,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
             </Surface>
 
             <Surface>
-              <h2 className="mb-3 text-lg font-bold">Discard</h2>
+              <h3 className="mb-3 font-bold text-foreground/80">Discard</h3>
               <div className="flex flex-wrap gap-2">
                 {discard.length === 0 ? (
                   <p className="text-sm text-foreground/70">No cards discarded.</p>
@@ -429,15 +430,14 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
                 )}
               </div>
             </Surface>
-          </section>
-        </CollapsibleSection>
+          </div>
+        </section>
 
-        <details className="border border-border bg-foreground p-4 text-accent-ink">
-          <summary className="cursor-pointer font-bold">Current sheet payload</summary>
-          <pre className="mt-4 max-h-80 overflow-auto text-xs leading-5">
+        <CollapsibleSection title="Current sheet payload" summary="Raw debug data, not needed for play.">
+          <pre className="max-h-80 overflow-auto text-xs leading-5">
             {JSON.stringify(sheetJson, null, 2)}
           </pre>
-        </details>
+        </CollapsibleSection>
     </>
   );
 }
