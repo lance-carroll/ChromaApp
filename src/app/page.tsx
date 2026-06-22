@@ -1174,6 +1174,7 @@ export default function Home() {
   const [threat, setThreat] = useState<ThreatPool>({ ...defaultThreat });
   const [campaignBusy, setCampaignBusy] = useState(false);
   const [campaignNotice, setCampaignNotice] = useState("");
+  const [campaignDraftOpen, setCampaignDraftOpen] = useState(false);
   const [playerCampaignNotice, setPlayerCampaignNotice] = useState("");
   const [joinedCampaigns, setJoinedCampaigns] = useState<CampaignRow[]>([]);
   const [joinInviteCode, setJoinInviteCode] = useState("");
@@ -2316,6 +2317,7 @@ export default function Home() {
 
   function applyCampaign(campaign: CampaignRow) {
     setCampaignId(campaign.id);
+    setCampaignDraftOpen(false);
     setCampaignName(campaign.name);
     setCampaignInviteCode(campaign.invite_code);
     setBeatNumber(campaign.beat_number);
@@ -2502,6 +2504,7 @@ export default function Home() {
 
   function newCampaignDraft() {
     setCampaignId(null);
+    setCampaignDraftOpen(true);
     setCampaignName("New Campaign");
     setRosterCharacters([]);
     setCampaignPosts([]);
@@ -2513,6 +2516,59 @@ export default function Home() {
     setCampaignSceneWords([]);
     setThreat({ ...defaultThreat });
     setCampaignNotice("Started a new campaign draft.");
+  }
+
+  async function deleteCampaign() {
+    if (!campaignId) {
+      setCampaignNotice("Open a campaign before deleting it.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete ${campaignName || "this campaign"}? This removes its scenes, beats, links, and posts.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setCampaignBusy(true);
+    const { error } = await supabase.from("campaigns").delete().eq("id", campaignId);
+    setCampaignBusy(false);
+
+    if (error) {
+      setCampaignNotice(error.message);
+      return;
+    }
+
+    const remainingCampaigns = campaigns.filter((campaign) => campaign.id !== campaignId);
+    setCampaigns(remainingCampaigns);
+    setCampaignLinks([]);
+    setCampaignPosts([]);
+    setCampaignScenes([]);
+    setCampaignBeats([]);
+    setRosterCharacters([]);
+    setSceneId(null);
+    setBeatId(null);
+    setCampaignId(null);
+    setCampaignInviteCode("");
+    setCampaignDraftOpen(false);
+    setSceneName("New Scene");
+    setSceneSummary("");
+    setBeatPrompt("");
+
+    if (remainingCampaigns.length > 0) {
+      applyCampaign(remainingCampaigns[0]);
+    } else {
+      setCampaignName("New Campaign");
+      setBeatNumber(1);
+      setCampaignDefaultCr(9);
+      setChallengeRating(9);
+      setPostingWindow("24-48 hours");
+      setCampaignSceneWords([]);
+      setThreat({ ...defaultThreat });
+      setCampaignNotice("Campaign deleted.");
+    }
   }
 
   function addSceneWord() {
@@ -3330,18 +3386,18 @@ export default function Home() {
                 </div>
               ) : null}
 
-              <div className="mt-4 grid gap-3">
-                <label className="grid gap-1">
-                  <span className="text-sm font-semibold text-stone-600">
-                    Campaign Name
-                  </span>
-                  <input
-                    className="min-w-0 border border-stone-300 px-3 py-2 outline-none focus:border-stone-700"
-                    value={campaignName}
-                    onChange={(event) => setCampaignName(event.target.value)}
-                  />
-                </label>
-                <div className="grid gap-3">
+              {campaignId ? (
+                <div className="mt-4 grid gap-3">
+                  <label className="grid gap-1">
+                    <span className="text-sm font-semibold text-stone-600">
+                      Campaign Name
+                    </span>
+                    <input
+                      className="min-w-0 border border-stone-300 px-3 py-2 outline-none focus:border-stone-700"
+                      value={campaignName}
+                      onChange={(event) => setCampaignName(event.target.value)}
+                    />
+                  </label>
                   <label className="grid gap-1">
                     <span className="text-sm font-semibold text-stone-600">
                       Posting Window
@@ -3352,36 +3408,42 @@ export default function Home() {
                       onChange={(event) => setPostingWindow(event.target.value)}
                     />
                   </label>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-4">
-                  <button
-                    type="button"
-                    className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50"
-                    onClick={newCampaignDraft}
-                  >
-                    New
-                  </button>
-                  <button
-                    type="button"
-                    className="h-11 border border-red-900 bg-red-900 px-4 font-semibold text-white hover:bg-red-800"
-                    onClick={saveCampaign}
-                    disabled={campaignBusy}
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50 disabled:opacity-50"
-                    onClick={linkCharacterToCampaign}
-                    disabled={!characterId || !campaignId}
-                  >
-                    Add Open Sheet
-                  </button>
-                  <span className="flex h-11 items-center border border-stone-300 px-3 text-sm text-stone-600">
-                    {campaignInviteCode ? `Invite ${campaignInviteCode}` : "Save for invite"}
-                  </span>
-                </div>
-                {campaignId ? (
+                  <div className="grid gap-2 sm:grid-cols-4">
+                    <button
+                      type="button"
+                      className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50"
+                      onClick={newCampaignDraft}
+                    >
+                      New
+                    </button>
+                    <button
+                      type="button"
+                      className="h-11 border border-red-900 bg-red-900 px-4 font-semibold text-white hover:bg-red-800"
+                      onClick={saveCampaign}
+                      disabled={campaignBusy}
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50 disabled:opacity-50"
+                      onClick={linkCharacterToCampaign}
+                      disabled={!characterId || !campaignId}
+                    >
+                      Add Open Sheet
+                    </button>
+                    <button
+                      type="button"
+                      className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50 disabled:opacity-50"
+                      onClick={deleteCampaign}
+                      disabled={!campaignId || campaignBusy}
+                    >
+                      Delete
+                    </button>
+                    <span className="flex h-11 items-center border border-stone-300 px-3 text-sm text-stone-600">
+                      {campaignInviteCode ? `Invite ${campaignInviteCode}` : "Save for invite"}
+                    </span>
+                  </div>
                   <div className="border border-stone-200 p-3">
                     <h3 className="text-sm font-bold uppercase tracking-wide text-stone-600">
                       Current Roster
@@ -3411,7 +3473,71 @@ export default function Home() {
                       )}
                     </div>
                   </div>
-                ) : null}
+                </div>
+              ) : (
+                <div className="mt-4 grid gap-3 border border-stone-200 bg-stone-50 p-3">
+                  <div>
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-stone-600">
+                      No Campaign Open
+                    </h3>
+                    <p className="mt-1 text-sm text-stone-600">
+                      Select a campaign above, or open a draft when you&apos;re ready to create a new one.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="h-11 border border-stone-900 bg-stone-900 px-4 font-semibold text-white hover:bg-stone-700"
+                    onClick={newCampaignDraft}
+                  >
+                    Open New Campaign Draft
+                  </button>
+                  <CollapsibleSection
+                    title="New Campaign Draft"
+                    summary="Keep this tucked away until you actually need it."
+                    defaultOpen={campaignDraftOpen}
+                  >
+                    <div className="grid gap-3">
+                      <label className="grid gap-1">
+                        <span className="text-sm font-semibold text-stone-600">
+                          Campaign Name
+                        </span>
+                        <input
+                          className="min-w-0 border border-stone-300 px-3 py-2 outline-none focus:border-stone-700"
+                          value={campaignName}
+                          onChange={(event) => setCampaignName(event.target.value)}
+                        />
+                      </label>
+                      <label className="grid gap-1">
+                        <span className="text-sm font-semibold text-stone-600">
+                          Posting Window
+                        </span>
+                        <input
+                          className="min-w-0 border border-stone-300 px-3 py-2 outline-none focus:border-stone-700"
+                          value={postingWindow}
+                          onChange={(event) => setPostingWindow(event.target.value)}
+                        />
+                      </label>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <button
+                          type="button"
+                          className="h-11 border border-red-900 bg-red-900 px-4 font-semibold text-white hover:bg-red-800"
+                          onClick={saveCampaign}
+                          disabled={campaignBusy}
+                        >
+                          Save Draft
+                        </button>
+                        <button
+                          type="button"
+                          className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50"
+                          onClick={newCampaignDraft}
+                        >
+                          Reset Draft
+                        </button>
+                      </div>
+                    </div>
+                  </CollapsibleSection>
+                </div>
+              )}
                 {campaignId ? (
                   <div className="grid gap-3 border border-stone-200 p-3">
                     <div className="flex items-center justify-between gap-3">

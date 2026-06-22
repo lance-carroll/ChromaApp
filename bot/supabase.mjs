@@ -144,6 +144,52 @@ export async function linkCampaignToChannel(
   supabase,
   { campaignId, guildId, channelId, threadId, linkedBy },
 ) {
+  const [
+    { data: campaignLink, error: campaignLinkError },
+    { data: channelLink, error: channelLinkError },
+  ] = await Promise.all([
+    supabase
+      .from("campaign_discord_links")
+      .select("*")
+      .eq("campaign_id", campaignId)
+      .maybeSingle(),
+    supabase
+      .from("campaign_discord_links")
+      .select("*")
+      .eq("guild_id", guildId)
+      .eq("channel_id", channelId)
+      .maybeSingle(),
+  ]);
+
+  if (campaignLinkError) {
+    return { data: null, error: campaignLinkError };
+  }
+
+  if (channelLinkError) {
+    return { data: null, error: channelLinkError };
+  }
+
+  const conflictingLinkIds = new Set();
+
+  if (campaignLink && campaignLink.channel_id !== channelId) {
+    conflictingLinkIds.add(campaignLink.id);
+  }
+
+  if (channelLink && channelLink.campaign_id !== campaignId) {
+    conflictingLinkIds.add(channelLink.id);
+  }
+
+  if (conflictingLinkIds.size > 0) {
+    const { error: deleteError } = await supabase
+      .from("campaign_discord_links")
+      .delete()
+      .in("id", [...conflictingLinkIds]);
+
+    if (deleteError) {
+      return { data: null, error: deleteError };
+    }
+  }
+
   return supabase
     .from("campaign_discord_links")
     .upsert(
