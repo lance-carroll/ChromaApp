@@ -369,7 +369,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                       </div>
                       <label className="grid gap-1">
                         <span className="text-sm font-semibold text-foreground/80">
-                          CR
+                          Challenge Rating
                         </span>
                         <input
                           className="min-w-0 border border-border bg-surface px-3 py-2 outline-none focus:border-accent"

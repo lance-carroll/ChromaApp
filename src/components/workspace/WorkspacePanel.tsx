@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChromaWorkspace } from "@/hooks/useChromaWorkspace";
-import { CollapsibleSection } from "@/components/ui";
+import { CollapsibleSection, Surface } from "@/components/ui";
 import { chromaNames } from "@/lib/chroma";
 
 export function WorkspacePanel(w: ChromaWorkspace) {
@@ -264,109 +264,112 @@ export function WorkspacePanel(w: ChromaWorkspace) {
   return (
           <CollapsibleSection
             title="Workspace"
-            summary="Sheets, campaign access, and Discord linking live here when you need them."
+            summary="Sheets and campaign access live here. Content libraries and Discord linking are tucked away below."
           >
-            <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-              <div className="grid gap-4">
-                <section className="border rounded-xl border border-border bg-surface-muted p-5">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold">Saved Sheets</h3>
-                      <p className="mt-1 text-sm text-foreground/70">
-                        {characters.length === 0
-                          ? "No saved characters yet."
-                          : `${characters.length} saved ${
-                              characters.length === 1 ? "character" : "characters"
-                            }`}
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold text-foreground/80">
-                      {loadBusy ? "Loading..." : characterId ? "Saved sheet open" : "Draft open"}
-                    </span>
-                  </div>
-                  {characters.length > 0 ? (
-                    <div className="mt-4 grid gap-2 md:grid-cols-2">
-                      {characters.map((character) => (
-                        <button
-                          type="button"
-                          key={character.id}
-                          className={`border px-3 py-3 text-left hover:bg-white ${
-                            character.id === characterId
-                              ? "border-accent bg-accent/10"
-                              : "border-border bg-surface"
+            <div className="grid gap-4">
+              <Surface className="bg-surface-muted">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold">Saved Sheets</h3>
+                    <p className="mt-1 text-sm text-foreground/70">
+                      {characters.length === 0
+                        ? "No saved characters yet."
+                        : `${characters.length} saved ${
+                            characters.length === 1 ? "character" : "characters"
                           }`}
-                          onClick={() => selectCharacter(character.id)}
-                        >
-                          <span className="block font-bold">{character.name}</span>
-                          <span className="mt-1 block text-sm text-foreground/70">
-                            {character.concept || "No concept yet"}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  ) : null}
-                </section>
-
-                <section className="border rounded-xl border border-border bg-surface-muted p-5">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold">Campaign Access</h3>
-                      <p className="mt-1 text-sm text-foreground/70">
-                        Open a saved sheet, enter the GM&apos;s invite code, then join.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      className="h-11 border border-accent bg-accent px-4 font-semibold text-white hover:opacity-90 disabled:opacity-50"
-                      onClick={joinCampaignByInvite}
-                      disabled={!characterId}
-                    >
-                      Join With Open Sheet
-                    </button>
-                  </div>
-                  {playerCampaignNotice ? (
-                    <p className="mt-3 border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
-                      {playerCampaignNotice}
                     </p>
-                  ) : null}
-                  <label className="mt-3 grid max-w-sm gap-1">
-                    <span className="text-sm font-semibold text-foreground/70">
-                      Invite Code
-                    </span>
-                    <input
-                      className="border border-border bg-surface px-3 py-2 uppercase outline-none focus:border-accent"
-                      value={joinInviteCode}
-                      onChange={(event) => setJoinInviteCode(event.target.value)}
-                      placeholder="AB12CD34"
-                    />
-                  </label>
-                  {joinedCampaigns.length > 0 ? (
-                    <div className="mt-4 grid gap-2 md:grid-cols-2">
-                      {joinedCampaigns.map((campaign) => (
-                        <button
-                          type="button"
-                          key={`joined-workspace-${campaign.id}`}
-                          className={`border px-3 py-2 text-left hover:bg-white ${
-                            campaign.id === campaignId
-                              ? "border-accent bg-accent/10"
-                              : "border-border bg-surface"
-                          }`}
-                          onClick={() => applyCampaign(campaign)}
-                        >
-                          <span className="block font-bold">{campaign.name}</span>
-                          <span className="mt-1 block text-xs text-foreground/70">
-                            Invite {campaign.invite_code}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  ) : null}
-                </section>
+                  </div>
+                  <span className="text-sm font-semibold text-foreground/80">
+                    {loadBusy ? "Loading..." : characterId ? "Saved sheet open" : "Draft open"}
+                  </span>
+                </div>
+                {characters.length > 0 ? (
+                  <div className="mt-4 grid gap-2 md:grid-cols-2">
+                    {characters.map((character) => (
+                      <button
+                        type="button"
+                        key={character.id}
+                        className={`border px-3 py-3 text-left hover:bg-white ${
+                          character.id === characterId
+                            ? "border-accent bg-accent/10"
+                            : "border-border bg-surface"
+                        }`}
+                        onClick={() => selectCharacter(character.id)}
+                      >
+                        <span className="block font-bold">{character.name}</span>
+                        <span className="mt-1 block text-sm text-foreground/70">
+                          {character.concept || "No concept yet"}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </Surface>
 
-                <section className="border rounded-xl border border-border bg-surface-muted p-5">
-                  <div className="flex flex-col gap-2">
+              <Surface className="bg-surface-muted">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold">Campaign Access</h3>
+                    <p className="mt-1 text-sm text-foreground/70">
+                      Open a saved sheet, enter the GM&apos;s invite code, then join.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="h-11 border border-accent bg-accent px-4 font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                    onClick={joinCampaignByInvite}
+                    disabled={!characterId}
+                  >
+                    Join With Open Sheet
+                  </button>
+                </div>
+                {playerCampaignNotice ? (
+                  <p className="mt-3 border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
+                    {playerCampaignNotice}
+                  </p>
+                ) : null}
+                <label className="mt-3 grid max-w-sm gap-1">
+                  <span className="text-sm font-semibold text-foreground/70">
+                    Invite Code
+                  </span>
+                  <input
+                    className="border border-border bg-surface px-3 py-2 uppercase outline-none focus:border-accent"
+                    value={joinInviteCode}
+                    onChange={(event) => setJoinInviteCode(event.target.value)}
+                    placeholder="AB12CD34"
+                  />
+                </label>
+                {joinedCampaigns.length > 0 ? (
+                  <div className="mt-4 grid gap-2 md:grid-cols-2">
+                    {joinedCampaigns.map((campaign) => (
+                      <button
+                        type="button"
+                        key={`joined-workspace-${campaign.id}`}
+                        className={`border px-3 py-2 text-left hover:bg-white ${
+                          campaign.id === campaignId
+                            ? "border-accent bg-accent/10"
+                            : "border-border bg-surface"
+                        }`}
+                        onClick={() => applyCampaign(campaign)}
+                      >
+                        <span className="block font-bold">{campaign.name}</span>
+                        <span className="mt-1 block text-xs text-foreground/70">
+                          Invite {campaign.invite_code}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </Surface>
+
+              <CollapsibleSection
+                title="Content Library"
+                summary="Create custom recipes and cards, then decide which ones this character can use - set up once per campaign, not every turn."
+              >
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <div className="grid gap-3">
                     <div>
-                      <h3 className="text-lg font-bold">Recipe Library</h3>
+                      <h3 className="text-lg font-bold">Recipes</h3>
                       <p className="mt-1 text-sm text-foreground/70">
                         Create custom recipes and decide which ones this character can use.
                       </p>
@@ -468,12 +471,10 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                       })}
                     </div>
                   </div>
-                </section>
 
-                <section className="border rounded-xl border border-border bg-surface-muted p-5">
-                  <div className="flex flex-col gap-2">
+                  <div className="grid gap-3">
                     <div>
-                      <h3 className="text-lg font-bold">Card Library</h3>
+                      <h3 className="text-lg font-bold">Cards</h3>
                       <p className="mt-1 text-sm text-foreground/70">
                         Create custom cards and add them to this character&apos;s deck.
                       </p>
@@ -541,22 +542,26 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                       })}
                     </div>
                   </div>
-                </section>
-              </div>
+                </div>
+              </CollapsibleSection>
 
-              <section className="border rounded-xl border border-border bg-surface-muted p-5">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold">Discord Link</h3>
-                    <p className="mt-1 text-sm text-foreground/70">
-                      {discordProfile?.discord_username
-                        ? `Linked as ${discordProfile.discord_username}. Generate a fresh code only when you need it.`
-                        : "Generate a one-time code here, then run /account link in Discord."}
-                    </p>
-                  </div>
+              <CollapsibleSection
+                title="Discord Link"
+                summary={
+                  discordProfile?.discord_username
+                    ? `Linked as ${discordProfile.discord_username}. Only open this to relink.`
+                    : "Generate a one-time code here, then run /account link in Discord."
+                }
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <p className="text-sm text-foreground/70">
+                    {discordProfile?.discord_username
+                      ? `Linked as ${discordProfile.discord_username}. Generate a fresh code only when you need it.`
+                      : "Generate a one-time code here, then run /account link in Discord."}
+                  </p>
                   <button
                     type="button"
-                    className="h-11 border border-accent bg-accent px-4 font-semibold text-white hover:bg-accent/90 disabled:opacity-60"
+                    className="h-11 shrink-0 border border-accent bg-accent px-4 font-semibold text-white hover:bg-accent/90 disabled:opacity-60"
                     onClick={createAccountLinkCode}
                     disabled={accountBusy}
                   >
@@ -568,7 +573,7 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                     {accountNotice}
                   </p>
                 ) : null}
-                <div className="mt-4 grid gap-2">
+                <div className="mt-4 grid gap-2 sm:grid-cols-2">
                   <div className="border border-border bg-surface px-3 py-2 text-sm">
                     <span className="block font-semibold text-foreground/70">Discord account</span>
                     <span className="mt-1 block font-semibold text-foreground">
@@ -584,7 +589,7 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                     </span>
                   </div>
                 </div>
-              </section>
+              </CollapsibleSection>
             </div>
           </CollapsibleSection>
   );
