@@ -325,7 +325,7 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                     </button>
                   </div>
                   {playerCampaignNotice ? (
-                    <p className="mt-3 border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-950">
+                    <p className="mt-3 border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
                       {playerCampaignNotice}
                     </p>
                   ) : null}
@@ -372,7 +372,7 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                       </p>
                     </div>
                     {contentNotice ? (
-                      <p className="border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-950">
+                      <p className="border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
                         {contentNotice}
                       </p>
                     ) : null}
@@ -564,7 +564,7 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                   </button>
                 </div>
                 {accountNotice ? (
-                  <p className="mt-3 border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-950">
+                  <p className="mt-3 border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
                     {accountNotice}
                   </p>
                 ) : null}

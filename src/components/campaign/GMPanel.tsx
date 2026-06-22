@@ -614,7 +614,7 @@ export function GMPanel(w: ChromaWorkspace) {
                               </button>
                             </div>
                             {scene.is_active ? (
-                              <span className="text-xs font-semibold uppercase tracking-wide text-red-700">
+                              <span className="text-xs font-semibold uppercase tracking-wide text-accent">
                                 Active
                               </span>
                             ) : null}
@@ -729,7 +729,7 @@ export function GMPanel(w: ChromaWorkspace) {
                                 </button>
                               </div>
                               {beat.is_active ? (
-                                <span className="text-xs font-semibold uppercase tracking-wide text-red-700">
+                                <span className="text-xs font-semibold uppercase tracking-wide text-accent">
                                   Active
                                 </span>
                               ) : null}
@@ -892,7 +892,7 @@ export function GMPanel(w: ChromaWorkspace) {
                                 ? "text-amber-700"
                                 : post.status === "resolved"
                                   ? "text-emerald-700"
-                                  : "text-rose-700"
+                                  : "text-chroma-red-ink"
                             }`}
                           >
                             {post.status}

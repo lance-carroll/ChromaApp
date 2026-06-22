@@ -256,7 +256,7 @@ export function AppHeader(w: ChromaWorkspace) {
   } = w;
   return (
     <>
-        <header className="grid gap-4 border border-accent bg-stone-950 px-4 py-5 text-accent-ink lg:grid-cols-[1fr_auto] lg:items-end">
+        <header className="grid gap-4 border border-accent bg-foreground px-4 py-5 text-accent-ink lg:grid-cols-[1fr_auto] lg:items-end">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent-ink/80">
               Chroma Word Engine
@@ -362,7 +362,7 @@ export function AppHeader(w: ChromaWorkspace) {
         {session ? (
           <section className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
             <div className="border border-border bg-surface px-4 py-3">
-              <span className="block text-xs font-semibold uppercase tracking-wide text-accent-ink0">
+              <span className="block text-xs font-semibold uppercase tracking-wide text-foreground/60">
                 Active Sheet
               </span>
               <span className="mt-1 block font-semibold text-foreground">
@@ -370,7 +370,7 @@ export function AppHeader(w: ChromaWorkspace) {
               </span>
             </div>
             <div className="border border-border bg-surface px-4 py-3">
-              <span className="block text-xs font-semibold uppercase tracking-wide text-accent-ink0">
+              <span className="block text-xs font-semibold uppercase tracking-wide text-foreground/60">
                 Campaign
               </span>
               <span className="mt-1 block font-semibold text-foreground">
@@ -378,7 +378,7 @@ export function AppHeader(w: ChromaWorkspace) {
               </span>
             </div>
             <div className="border border-border bg-surface px-4 py-3">
-              <span className="block text-xs font-semibold uppercase tracking-wide text-accent-ink0">
+              <span className="block text-xs font-semibold uppercase tracking-wide text-foreground/60">
                 Scene / Beat
               </span>
               <span className="mt-1 block font-semibold text-foreground">
@@ -386,7 +386,7 @@ export function AppHeader(w: ChromaWorkspace) {
               </span>
             </div>
             <div className="border border-border bg-surface px-4 py-3">
-              <span className="block text-xs font-semibold uppercase tracking-wide text-accent-ink0">
+              <span className="block text-xs font-semibold uppercase tracking-wide text-foreground/60">
                 Discord
               </span>
               <span className="mt-1 block font-semibold text-foreground">
