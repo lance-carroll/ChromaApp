@@ -743,6 +743,10 @@ const defaultSheet: SheetPayload = {
   discard: [],
 };
 
+const appUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (typeof window !== "undefined" ? window.location.origin : "");
+
 function Counter({
   label,
   value,
@@ -2966,11 +2970,16 @@ export default function Home() {
       return;
     }
 
+    if (!appUrl) {
+      setMessage("Set NEXT_PUBLIC_SITE_URL to your deployed app URL.");
+      return;
+    }
+
     setAuthBusy(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: appUrl,
       },
     });
     setAuthBusy(false);
