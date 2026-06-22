@@ -706,12 +706,14 @@ export function GMPanel(w: ChromaWorkspace) {
                     items={campaignTargetMarks}
                     setItems={setCampaignTargetMarks}
                     placeholder="shaken, watched, off-balance"
+                    tone="Violet"
                   />
                   <TextEntryList
                     title="Wounds"
                     items={campaignTargetWounds}
                     setItems={setCampaignTargetWounds}
                     placeholder="black ash, red hunger"
+                    tone="Red"
                   />
                 </div>
               </div>

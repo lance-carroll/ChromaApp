@@ -2,7 +2,24 @@
 
 import type { ChromaWorkspace } from "@/hooks/useChromaWorkspace";
 import { Button, CollapsibleSection, Surface } from "@/components/ui";
-import { chromaNames, colorStyles, getGearDetailText, getGearLabel, gradeBonus, threatBucketByColor } from "@/lib/chroma";
+import {
+  chromaNames,
+  colorStyles,
+  getGearDetailText,
+  getGearLabel,
+  gradeBonus,
+  postTypeTones,
+  threatBucketByColor,
+  toneColorVars,
+} from "@/lib/chroma";
+import type { PostType } from "@/lib/chroma";
+
+const postTypeLabels: Record<PostType, string> = {
+  act: "Act",
+  breathe: "Breathe",
+  setup: "Setup",
+  ghost: "Ghost",
+};
 
 export function PostBuilderPanel(w: ChromaWorkspace) {
   const {
@@ -308,30 +325,34 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
           <div className="border border-border bg-[#fcfaf6] p-4">
             <h3 className="text-lg font-bold">Build</h3>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              <Button
-                onClick={() => changePostType("act")}
-                selected={postType === "act"}
-              >
-                Act
-              </Button>
-              <Button
-                onClick={() => changePostType("breathe")}
-                selected={postType === "breathe"}
-              >
-                Breathe
-              </Button>
-              <Button
-                onClick={() => changePostType("setup")}
-                selected={postType === "setup"}
-              >
-                Setup
-              </Button>
-              <Button
-                onClick={() => changePostType("ghost")}
-                selected={postType === "ghost"}
-              >
-                Ghost
-              </Button>
+              {(Object.keys(postTypeLabels) as PostType[]).map((type) => {
+                const isSelected = postType === type;
+                const tone = toneColorVars[postTypeTones[type]];
+
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => changePostType(type)}
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border px-3.5 py-2 text-sm font-semibold tracking-tight transition-all duration-150 active:translate-y-px"
+                    style={
+                      isSelected
+                        ? {
+                            borderColor: tone,
+                            backgroundColor: `color-mix(in srgb, ${tone} 16%, transparent)`,
+                            color: tone,
+                          }
+                        : {
+                            borderColor: "var(--color-border)",
+                            backgroundColor: "var(--color-surface)",
+                            color: "var(--color-foreground)",
+                          }
+                    }
+                  >
+                    {postTypeLabels[type]}
+                  </button>
+                );
+              })}
             </div>
 
             {postType === "act" || postType === "setup" ? (

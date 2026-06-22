@@ -293,8 +293,8 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
           </Surface>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Counter label="Focus" value={focus} max={3} setValue={setFocus} />
-            <Counter label="Thread" value={thread} max={3} setValue={setThread} />
+            <Counter label="Focus" value={focus} max={3} setValue={setFocus} tone="Gold" />
+            <Counter label="Thread" value={thread} max={3} setValue={setThread} tone="Violet" />
           </div>
         </section>
 
@@ -356,12 +356,14 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
             items={marks}
             setItems={setMarks}
             placeholder="shaken, watched, off-balance"
+            tone="Violet"
           />
           <TextEntryList
             title="Wounds"
             items={wounds}
             setItems={setWounds}
             placeholder="black ash, red hunger"
+            tone="Red"
           />
         </section>
 

@@ -2,7 +2,7 @@
 
 import type { GearItem } from "@/lib/chroma";
 import { chromaNames, normalizeChromaColor, normalizeCounter, parseTagList } from "@/lib/chroma";
-import { Button, Input, Label, Select, Surface } from "@/components/ui";
+import { Button, GaugeBar, Input, Label, Select, Surface } from "@/components/ui";
 
 export function GearList({
   items,
@@ -97,7 +97,7 @@ export function GearList({
               />
             </label>
 
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 md:grid-cols-[1fr_120px_120px_auto]">
               <label className="grid gap-1">
                 <Label>Chroma</Label>
                 <Select
@@ -126,31 +126,6 @@ export function GearList({
               </label>
 
               <label className="grid gap-1">
-                <Label>Guard Current</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  max={item.guard_max}
-                  value={item.guard}
-                  onChange={(event) =>
-                    updateGearItem(item.id, { guard: normalizeCounter(event.target.value) })
-                  }
-                />
-              </label>
-
-              <label className="grid gap-1">
-                <Label>Tapped This Scene</Label>
-                <Button
-                  selected={item.tapped}
-                  onClick={() => updateGearItem(item.id, { tapped: !item.tapped })}
-                >
-                  {item.tapped ? "Tapped" : "Ready"}
-                </Button>
-              </label>
-            </div>
-
-            <div className="grid gap-3 md:grid-cols-2">
-              <label className="grid gap-1">
                 <Label>Supply Max</Label>
                 <Input
                   type="number"
@@ -163,18 +138,39 @@ export function GearList({
               </label>
 
               <label className="grid gap-1">
-                <Label>Supply Current</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  max={item.supply_max}
-                  value={item.supply}
-                  onChange={(event) =>
-                    updateGearItem(item.id, { supply: normalizeCounter(event.target.value) })
-                  }
-                />
+                <Label>Status</Label>
+                <Button
+                  selected={item.tapped}
+                  className="rounded-full"
+                  onClick={() => updateGearItem(item.id, { tapped: !item.tapped })}
+                >
+                  {item.tapped ? "Tapped" : "Ready"}
+                </Button>
               </label>
             </div>
+
+            {item.guard_max > 0 || item.supply_max > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {item.guard_max > 0 ? (
+                  <GaugeBar
+                    label="Guard"
+                    value={item.guard}
+                    max={item.guard_max}
+                    setValue={(value) => updateGearItem(item.id, { guard: value })}
+                    tone="Blue"
+                  />
+                ) : null}
+                {item.supply_max > 0 ? (
+                  <GaugeBar
+                    label="Supply"
+                    value={item.supply}
+                    max={item.supply_max}
+                    setValue={(value) => updateGearItem(item.id, { supply: value })}
+                    tone="Green"
+                  />
+                ) : null}
+              </div>
+            ) : null}
           </div>
         ))}
       </div>

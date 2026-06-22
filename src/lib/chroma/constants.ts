@@ -1,6 +1,7 @@
 import type {
   ActGradeName,
   Card,
+  PostType,
   Recipe,
   SheetPayload,
   ThreatBucket,
@@ -70,6 +71,24 @@ export const colorStyles: Record<string, string> = {
 };
 
 export const chromaNames = Object.keys(colorStyles);
+
+export type Tone = "accent" | "Red" | "Blue" | "Green" | "Gold" | "Violet";
+
+export const toneColorVars: Record<Tone, string> = {
+  accent: "var(--color-accent)",
+  Red: "var(--color-chroma-red)",
+  Blue: "var(--color-chroma-blue)",
+  Green: "var(--color-chroma-green)",
+  Gold: "var(--color-chroma-gold)",
+  Violet: "var(--color-chroma-violet)",
+};
+
+export const postTypeTones: Record<PostType, Tone> = {
+  act: "Red",
+  breathe: "Blue",
+  setup: "Gold",
+  ghost: "Violet",
+};
 
 export const defaultThreat: ThreatPool = {
   Peril: 0,

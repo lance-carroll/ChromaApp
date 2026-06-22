@@ -1,45 +1,23 @@
 import { Surface } from "./Surface";
-import { Button } from "./Button";
+import { GaugeBar } from "./GaugeBar";
+import type { Tone } from "@/lib/chroma";
 
 export function Counter({
   label,
   value,
   max,
   setValue,
+  tone,
 }: {
   label: string;
   value: number;
   max: number;
   setValue: (value: number) => void;
+  tone?: Tone;
 }) {
   return (
     <Surface>
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
-          {label}
-        </span>
-        <span className="font-mono text-xl font-bold">
-          {value}/{max}
-        </span>
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <Button
-          variant="secondary"
-          className="h-10 text-xl"
-          aria-label={`Decrease ${label}`}
-          onClick={() => setValue(Math.max(0, value - 1))}
-        >
-          -
-        </Button>
-        <Button
-          variant="secondary"
-          className="h-10 text-xl"
-          aria-label={`Increase ${label}`}
-          onClick={() => setValue(Math.min(max, value + 1))}
-        >
-          +
-        </Button>
-      </div>
+      <GaugeBar label={label} value={value} max={max} setValue={setValue} tone={tone} />
     </Surface>
   );
 }
