@@ -743,9 +743,17 @@ const defaultSheet: SheetPayload = {
   discard: [],
 };
 
-const appUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (typeof window !== "undefined" ? window.location.origin : "");
+function getAppUrl() {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+
+  return "";
+}
 
 function Counter({
   label,
@@ -2969,6 +2977,8 @@ export default function Home() {
       setMessage("Enter an email address first.");
       return;
     }
+
+    const appUrl = getAppUrl();
 
     if (!appUrl) {
       setMessage("Set NEXT_PUBLIC_SITE_URL to your deployed app URL.");
