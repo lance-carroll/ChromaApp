@@ -1190,6 +1190,7 @@ export default function Home() {
   const [campaignTargetCharacterId, setCampaignTargetCharacterId] = useState<string | null>(null);
   const [campaignTargetMarks, setCampaignTargetMarks] = useState<Entry[]>([]);
   const [campaignTargetWounds, setCampaignTargetWounds] = useState<Entry[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [playerCampaignNotice, setPlayerCampaignNotice] = useState("");
   const [joinedCampaigns, setJoinedCampaigns] = useState<CampaignRow[]>([]);
   const [joinInviteCode, setJoinInviteCode] = useState("");
@@ -3270,7 +3271,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#f7f4ed] text-stone-950">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="grid gap-4 border border-stone-900 bg-stone-950 px-4 py-5 text-stone-50 lg:grid-cols-[1fr_auto] lg:items-end">
+        <header className="grid gap-3 border border-stone-900 bg-stone-950 px-4 py-5 text-stone-50">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-red-300">
               Chroma Word Engine
@@ -3286,42 +3287,6 @@ export default function Home() {
             <p className="mt-2 max-w-2xl text-sm text-stone-300">
               Keep the active post front and center. Everything else can wait offstage until you need it.
             </p>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[420px]">
-            {session ? (
-              <button
-                type="button"
-                className="h-11 border border-stone-700 bg-stone-900 px-4 font-semibold text-stone-100 hover:bg-stone-800"
-                onClick={signOut}
-                disabled={authBusy}
-              >
-                Sign out
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="h-11 border border-red-700 bg-red-700 px-4 font-semibold text-white hover:bg-red-600 disabled:opacity-60"
-                onClick={signIn}
-                disabled={authBusy}
-              >
-                {authBusy ? "Sending..." : "Send link"}
-              </button>
-            )}
-            <button
-              type="button"
-              className="h-11 border border-stone-700 bg-stone-900 px-4 font-semibold text-stone-100 hover:bg-stone-800"
-              onClick={resetDraft}
-            >
-              New draft
-            </button>
-            <button
-              type="button"
-              className="h-11 border border-red-700 bg-red-700 px-4 font-semibold text-white hover:bg-red-600 disabled:opacity-60"
-              onClick={saveSheet}
-              disabled={saveBusy || !session}
-            >
-              {saveBusy ? "Saving..." : "Save sheet"}
-            </button>
           </div>
         </header>
 
@@ -3343,33 +3308,6 @@ export default function Home() {
                 />
               </label>
             </div>
-          </section>
-        ) : null}
-
-        {session ? (
-          <section className="grid gap-2 border border-stone-300 bg-white p-3 sm:grid-cols-2">
-            <button
-              type="button"
-              className={`h-11 border px-4 font-semibold ${
-                viewMode === "player"
-                  ? "border-red-900 bg-red-50 text-red-950"
-                  : "border-stone-300 hover:bg-stone-50"
-              }`}
-              onClick={() => setViewMode("player")}
-            >
-              Player View
-            </button>
-            <button
-              type="button"
-              className={`h-11 border px-4 font-semibold ${
-                viewMode === "gm"
-                  ? "border-red-900 bg-red-50 text-red-950"
-                  : "border-stone-300 hover:bg-stone-50"
-              }`}
-              onClick={() => setViewMode("gm")}
-            >
-              GM View
-            </button>
           </section>
         ) : null}
 
@@ -3410,6 +3348,185 @@ export default function Home() {
           </section>
         ) : null}
 
+        {session ? (
+          <div
+            className={`grid gap-6 lg:items-start ${
+              sidebarOpen
+                ? "lg:grid-cols-[17rem_minmax(0,1fr)]"
+                : "lg:grid-cols-[4rem_minmax(0,1fr)]"
+            }`}
+          >
+            <aside className="border border-stone-300 bg-white p-3 lg:sticky lg:top-6 lg:self-start">
+              <div className="flex items-center justify-between gap-3 border-b border-stone-200 pb-3">
+                <div className={sidebarOpen ? "min-w-0" : "hidden"}>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                    Navigation
+                  </p>
+                  <h2 className="text-base font-bold text-stone-950">Control Rail</h2>
+                </div>
+                <button
+                  type="button"
+                  className="h-9 border border-stone-300 px-3 text-sm font-semibold hover:bg-stone-50"
+                  onClick={() => setSidebarOpen((current) => !current)}
+                  aria-label={sidebarOpen ? "Collapse navigation" : "Open navigation"}
+                >
+                  {sidebarOpen ? "Collapse" : "Open"}
+                </button>
+              </div>
+              {sidebarOpen ? (
+                <div className="mt-4 grid gap-4">
+                  <section className="grid gap-2">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                      View
+                    </h3>
+                    <button
+                      type="button"
+                      className={`h-11 border px-4 font-semibold ${
+                        viewMode === "player"
+                          ? "border-red-900 bg-red-50 text-red-950"
+                          : "border-stone-300 hover:bg-stone-50"
+                      }`}
+                      onClick={() => setViewMode("player")}
+                    >
+                      Player View
+                    </button>
+                    <button
+                      type="button"
+                      className={`h-11 border px-4 font-semibold ${
+                        viewMode === "gm"
+                          ? "border-red-900 bg-red-50 text-red-950"
+                          : "border-stone-300 hover:bg-stone-50"
+                      }`}
+                      onClick={() => setViewMode("gm")}
+                    >
+                      GM View
+                    </button>
+                  </section>
+
+                  <section className="grid gap-2">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                      Quick Actions
+                    </h3>
+                    <button
+                      type="button"
+                      className="h-11 border border-stone-300 bg-white px-4 font-semibold hover:bg-stone-50"
+                      onClick={resetDraft}
+                    >
+                      New Character
+                    </button>
+                    <button
+                      type="button"
+                      className="h-11 border border-red-900 bg-red-900 px-4 font-semibold text-white hover:bg-red-800"
+                      onClick={() => {
+                        setViewMode("gm");
+                        newCampaignDraft();
+                      }}
+                    >
+                      New Campaign
+                    </button>
+                    <button
+                      type="button"
+                      className="h-11 border border-red-900 bg-red-900 px-4 font-semibold text-white hover:bg-red-800 disabled:opacity-60"
+                      onClick={saveSheet}
+                      disabled={saveBusy || !session}
+                    >
+                      {saveBusy ? "Saving..." : "Save Sheet"}
+                    </button>
+                    <button
+                      type="button"
+                      className="h-11 border border-stone-700 bg-stone-900 px-4 font-semibold text-stone-100 hover:bg-stone-800"
+                      onClick={signOut}
+                      disabled={authBusy}
+                    >
+                      Sign Out
+                    </button>
+                  </section>
+
+                  <CollapsibleSection
+                    title="Campaigns"
+                    summary={`${campaigns.length} saved ${campaigns.length === 1 ? "campaign" : "campaigns"}.`}
+                    defaultOpen
+                  >
+                    <div className="grid gap-2">
+                      {campaigns.length === 0 ? (
+                        <p className="text-sm text-stone-600">No saved campaigns yet.</p>
+                      ) : (
+                        campaigns.map((campaign) => (
+                          <button
+                            type="button"
+                            key={campaign.id}
+                            className={`border px-3 py-2 text-left hover:bg-stone-50 ${
+                              campaign.id === campaignId
+                                ? "border-red-900 bg-red-50"
+                                : "border-stone-300"
+                            }`}
+                            onClick={() => applyCampaign(campaign)}
+                          >
+                            <span className="block font-bold">{campaign.name}</span>
+                            <span className="mt-1 block text-xs text-stone-600">
+                              Invite {campaign.invite_code}
+                            </span>
+                          </button>
+                        ))
+                      )}
+                      <button
+                        type="button"
+                        className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50"
+                        onClick={() => {
+                          setViewMode("gm");
+                          newCampaignDraft();
+                        }}
+                      >
+                        Start New Draft
+                      </button>
+                    </div>
+                  </CollapsibleSection>
+
+                  <section className="grid gap-2">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                      Status
+                    </h3>
+                    <div className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                      <span className="block font-semibold text-stone-600">Active Sheet</span>
+                      <span className="mt-1 block font-semibold text-stone-900">
+                        {activeSheetLabel}
+                      </span>
+                    </div>
+                    <div className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                      <span className="block font-semibold text-stone-600">Campaign</span>
+                      <span className="mt-1 block font-semibold text-stone-900">
+                        {activeCampaignLabel}
+                      </span>
+                    </div>
+                    <div className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                      <span className="block font-semibold text-stone-600">Scene / Beat</span>
+                      <span className="mt-1 block font-semibold text-stone-900">
+                        {activeSceneLabel} Â· {activeBeatLabel}
+                      </span>
+                    </div>
+                    <div className="border border-stone-300 bg-white px-3 py-2 text-sm">
+                      <span className="block font-semibold text-stone-600">Discord</span>
+                      <span className="mt-1 block font-semibold text-stone-900">
+                        {discordStatusLabel}
+                      </span>
+                    </div>
+                  </section>
+                </div>
+              ) : (
+                <div className="flex items-start justify-center py-4">
+                  <button
+                    type="button"
+                    className="h-11 border border-stone-300 px-3 text-sm font-semibold hover:bg-stone-50"
+                    onClick={() => setSidebarOpen(true)}
+                    aria-label="Open navigation"
+                  >
+                    Menu
+                  </button>
+                </div>
+              )}
+            </aside>
+
+            <div className="grid gap-6 min-w-0">
         {session && viewMode === "player" && false ? (
           <CollapsibleSection
             title="Saved Sheets"
@@ -3537,28 +3654,6 @@ export default function Home() {
                   {campaignBusy ? "Saving..." : campaignId ? "Campaign open" : "Draft"}
                 </span>
               </div>
-
-              {campaigns.length > 0 ? (
-                <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                  {campaigns.map((campaign) => (
-                    <button
-                      type="button"
-                      key={campaign.id}
-                      className={`border px-3 py-2 text-left hover:bg-stone-50 ${
-                        campaign.id === campaignId
-                          ? "border-red-900 bg-red-50"
-                          : "border-stone-300"
-                      }`}
-                      onClick={() => applyCampaign(campaign)}
-                    >
-                      <span className="block font-bold">{campaign.name}</span>
-                      <span className="mt-1 block text-xs text-stone-600">
-                        Invite {campaign.invite_code}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
 
               {campaignId ? (
                 <div className="mt-4 grid gap-3">
@@ -3761,67 +3856,13 @@ export default function Home() {
                   ) : null}
                 </div>
               ) : (
-                <div className="mt-4 grid gap-3 border border-stone-200 bg-stone-50 p-3">
-                  <div>
-                    <h3 className="text-sm font-bold uppercase tracking-wide text-stone-600">
-                      No Campaign Open
-                    </h3>
-                    <p className="mt-1 text-sm text-stone-600">
-                      Select a campaign above, or open a draft when you&apos;re ready to create a new one.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    className="h-11 border border-stone-900 bg-stone-900 px-4 font-semibold text-white hover:bg-stone-700"
-                    onClick={newCampaignDraft}
-                  >
-                    Open New Campaign Draft
-                  </button>
-                  <CollapsibleSection
-                    title="New Campaign Draft"
-                    summary="Keep this tucked away until you actually need it."
-                    defaultOpen={campaignDraftOpen}
-                  >
-                    <div className="grid gap-3">
-                      <label className="grid gap-1">
-                        <span className="text-sm font-semibold text-stone-600">
-                          Campaign Name
-                        </span>
-                        <input
-                          className="min-w-0 border border-stone-300 px-3 py-2 outline-none focus:border-stone-700"
-                          value={campaignName}
-                          onChange={(event) => setCampaignName(event.target.value)}
-                        />
-                      </label>
-                      <label className="grid gap-1">
-                        <span className="text-sm font-semibold text-stone-600">
-                          Posting Window
-                        </span>
-                        <input
-                          className="min-w-0 border border-stone-300 px-3 py-2 outline-none focus:border-stone-700"
-                          value={postingWindow}
-                          onChange={(event) => setPostingWindow(event.target.value)}
-                        />
-                      </label>
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        <button
-                          type="button"
-                          className="h-11 border border-red-900 bg-red-900 px-4 font-semibold text-white hover:bg-red-800"
-                          onClick={saveCampaign}
-                          disabled={campaignBusy}
-                        >
-                          Save Draft
-                        </button>
-                        <button
-                          type="button"
-                          className="h-11 border border-stone-300 px-4 font-semibold hover:bg-stone-50"
-                          onClick={newCampaignDraft}
-                        >
-                          Reset Draft
-                        </button>
-                      </div>
-                    </div>
-                  </CollapsibleSection>
+                <div className="mt-4 border border-stone-200 bg-stone-50 p-3">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-stone-600">
+                    No Campaign Open
+                  </h3>
+                  <p className="mt-1 text-sm text-stone-600">
+                    Pick a campaign from the rail or start a new draft from Quick Actions.
+                  </p>
                 </div>
               )}
                 {campaignId ? (
@@ -5209,6 +5250,8 @@ export default function Home() {
             {JSON.stringify(sheetJson, null, 2)}
           </pre>
         </details>
+            </div>
+          </div>
           </>
         ) : null}
       </div>
