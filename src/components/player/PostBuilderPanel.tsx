@@ -262,7 +262,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
           <div className="flex flex-col gap-3 border-b border-border pb-4">
             <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red-700">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
                   Active Turn
                 </p>
                 <h2 className="mt-1 text-xl font-black text-foreground">
@@ -274,7 +274,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
               </div>
               <div className="grid gap-2 text-sm sm:grid-cols-3">
                 <div className="border border-border bg-surface-muted px-3 py-2">
-                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-accent-ink0">
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-foreground/60">
                     Character
                   </span>
                   <span className="mt-1 block font-semibold text-foreground">
@@ -282,7 +282,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                   </span>
                 </div>
                 <div className="border border-border bg-surface-muted px-3 py-2">
-                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-accent-ink0">
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-foreground/60">
                     Campaign
                   </span>
                   <span className="mt-1 block font-semibold text-foreground">
@@ -290,7 +290,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                   </span>
                 </div>
                 <div className="border border-border bg-surface-muted px-3 py-2">
-                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-accent-ink0">
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-foreground/60">
                     Scene
                   </span>
                   <span className="mt-1 block font-semibold text-foreground">
@@ -336,7 +336,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                 {postType === "act" ? (
                   <>
                     {!hasAvailableRecipes ? (
-                      <p className="border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-950">
+                      <p className="border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
                         No recipes are assigned to this character yet. Add one in Workspace.
                       </p>
                     ) : null}
@@ -604,7 +604,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                     key={`builder-card-${card.word}`}
                     className={`border px-3 py-2 text-left font-semibold hover:brightness-95 ${
                       selectedCardWords.includes(card.word)
-                        ? "ring-2 ring-red-900"
+                        ? "ring-2 ring-accent"
                         : ""
                     } ${colorStyles[card.color]}`}
                     onClick={() => toggleSelectedCard(card.word)}
@@ -651,7 +651,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
             </div>
           </div>
 
-          <div className="border border-accent bg-stone-950 p-4 text-accent-ink xl:col-span-2">
+          <div className="border border-accent bg-foreground p-4 text-accent-ink xl:col-span-2">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h3 className="text-base font-bold">Review And Queue</h3>
@@ -661,15 +661,15 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
               </div>
             </div>
             <div className="mt-4 border border-accent bg-accent p-3">
-              <p className="text-sm font-semibold text-stone-200">Preview</p>
+              <p className="text-sm font-semibold text-foreground/50">Preview</p>
               <p className="mt-1 text-sm text-accent-ink">{postSummary()}</p>
               {builderNotice ? (
-                <p className="mt-3 border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-950">
+                <p className="mt-3 border border-chroma-gold/40 bg-chroma-gold/10 px-3 py-2 text-sm font-semibold text-chroma-gold-ink">
                   {builderNotice}
                 </p>
               ) : null}
               {mechanicsSummary ? (
-                <div className="mt-3 border border-stone-400 bg-white">
+                <div className="mt-3 border border-border bg-white">
                   <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
                     <p className="text-sm font-bold text-foreground">
                       Generated Mechanics
@@ -690,7 +690,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 <button
                   type="button"
-                  className="h-11 border border-stone-600 bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent/80"
+                  className="h-11 border border-border bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent/80"
                   onClick={clearPostBuilder}
                 >
                   Clear
@@ -698,7 +698,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                 {mechanicsSummary ? (
                   <button
                     type="button"
-                    className="h-11 border border-stone-600 bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent/80"
+                    className="h-11 border border-border bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent/80"
                     onClick={editGeneratedPost}
                   >
                     Edit
@@ -751,7 +751,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                             ? "text-amber-700"
                             : post.status === "resolved"
                               ? "text-emerald-700"
-                              : "text-rose-700"
+                              : "text-chroma-red-ink"
                         }`}
                       >
                         {post.status}
@@ -765,7 +765,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                       </button>
                       <button
                         type="button"
-                        className="h-8 border border-rose-300 px-3 text-xs font-semibold text-rose-800 hover:bg-rose-50"
+                        className="h-8 border border-chroma-red/40 px-3 text-xs font-semibold text-chroma-red-ink hover:bg-chroma-red/10"
                         onClick={() => cancelQueuedPost(post)}
                       >
                         Cancel
