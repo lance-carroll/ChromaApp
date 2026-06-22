@@ -3747,9 +3747,8 @@ export default function Home() {
                       </button>
                     </div>
                   </div>
-                ) : null}
+              ) : null}
               </div>
-            </div>
 
             <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
               <div className="border border-stone-200 p-3">
