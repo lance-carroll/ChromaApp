@@ -5250,7 +5250,6 @@ export default function Home() {
             {JSON.stringify(sheetJson, null, 2)}
           </pre>
         </details>
-          </section>
             </div>
           </div>
           </>
