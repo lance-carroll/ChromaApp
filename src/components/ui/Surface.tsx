@@ -15,8 +15,8 @@ export function Surface({
   const Tag = as;
   return (
     <Tag
-      className={`surface-shadow rounded-lg border border-border bg-surface ${
-        padded ? "p-4" : ""
+      className={`surface-shadow rounded-xl border border-border bg-surface ${
+        padded ? "p-5" : ""
       } ${className}`.trim()}
       {...rest}
     >

@@ -38,7 +38,7 @@ export function GearList({
     <Surface as="section">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold">Gear</h2>
+          <h2 className="text-lg font-bold">Gear</h2>
           <p className="mt-1 text-sm text-foreground/70">
             Structure gear into tags, Chroma, Guard, and Supply.
           </p>

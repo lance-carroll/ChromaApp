@@ -26,46 +26,62 @@ export function AppSidebar(w: ChromaWorkspace) {
 
   return (
     <aside className="flex h-fit flex-col gap-6 lg:sticky lg:top-6">
-      <div className="surface-shadow rounded-lg border border-border bg-foreground p-5 text-accent-ink">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent-ink/70">
+      <div
+        className="surface-shadow-lg relative overflow-hidden rounded-xl border border-accent-strong/40 p-5 text-accent-ink"
+        style={{
+          background:
+            "radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--color-chroma-violet) 35%, transparent), transparent 55%), linear-gradient(160deg, var(--color-accent-strong), var(--foreground))",
+        }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent-ink/70">
           Chroma Word Engine
         </p>
-        <h1 className="mt-1 text-3xl font-black leading-tight">Play Surface</h1>
-        <span className="mt-3 inline-flex items-center rounded-full border border-accent-ink/30 bg-accent-ink/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide">
+        <h1 className="mt-1 font-display text-3xl font-black leading-tight">Play Surface</h1>
+        <span className="mt-3 inline-flex items-center rounded-full border border-accent-ink/30 bg-accent-ink/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide backdrop-blur-sm">
           {session ? "Saving enabled" : "Local draft mode"}
         </span>
       </div>
 
       {session ? (
-        <div className="surface-shadow rounded-lg border border-border bg-surface p-2">
+        <div className="surface-shadow-lg rounded-xl border border-border bg-surface p-2">
           <nav className="grid gap-1">
             <button
               type="button"
               onClick={() => setViewMode("player")}
-              className={`rounded-md px-4 py-3 text-left text-sm font-semibold transition-colors ${
+              className={`flex items-center gap-3 rounded-md border-l-[3px] px-4 py-3 text-left text-sm font-semibold transition-colors ${
                 viewMode === "player"
-                  ? "bg-accent/10 text-accent"
-                  : "text-foreground/70 hover:bg-surface-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-transparent text-foreground/70 hover:bg-surface-muted"
               }`}
             >
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  viewMode === "player" ? "bg-accent" : "bg-foreground/20"
+                }`}
+              />
               Player View
             </button>
             <button
               type="button"
               onClick={() => setViewMode("gm")}
-              className={`rounded-md px-4 py-3 text-left text-sm font-semibold transition-colors ${
+              className={`flex items-center gap-3 rounded-md border-l-[3px] px-4 py-3 text-left text-sm font-semibold transition-colors ${
                 viewMode === "gm"
-                  ? "bg-accent/10 text-accent"
-                  : "text-foreground/70 hover:bg-surface-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-transparent text-foreground/70 hover:bg-surface-muted"
               }`}
             >
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  viewMode === "gm" ? "bg-accent" : "bg-foreground/20"
+                }`}
+              />
               GM View
             </button>
           </nav>
         </div>
       ) : null}
 
-      <div className="surface-shadow rounded-lg border border-border bg-surface p-5">
+      <div className="surface-shadow-lg rounded-xl border border-border bg-surface p-5">
         {session ? (
           <div className="grid gap-3">
             <p className="text-sm text-foreground/70">{session.user.email}</p>
@@ -81,7 +97,7 @@ export function AppSidebar(w: ChromaWorkspace) {
           </div>
         ) : (
           <div className="grid gap-3">
-            <h2 className="text-base font-bold">Sign In</h2>
+            <h2 className="text-lg font-bold">Sign In</h2>
             <p className="text-sm text-foreground/70">{message}</p>
             <Input
               type="email"
@@ -97,7 +113,7 @@ export function AppSidebar(w: ChromaWorkspace) {
       </div>
 
       {session ? (
-        <div className="surface-shadow grid gap-3 rounded-lg border border-border bg-surface p-5">
+        <div className="surface-shadow-lg grid gap-3 rounded-xl border border-border bg-surface p-5">
           <StatusRow label="Active Sheet" value={activeSheetLabel} />
           <StatusRow label="Campaign" value={activeCampaignLabel} />
           <StatusRow label="Scene / Beat" value={`${activeSceneLabel} · ${activeBeatLabel}`} />

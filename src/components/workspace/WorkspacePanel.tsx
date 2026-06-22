@@ -268,10 +268,10 @@ export function WorkspacePanel(w: ChromaWorkspace) {
           >
             <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
               <div className="grid gap-4">
-                <section className="border rounded-lg border border-border bg-surface-muted p-4">
+                <section className="border rounded-xl border border-border bg-surface-muted p-5">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h3 className="text-base font-bold">Saved Sheets</h3>
+                      <h3 className="text-lg font-bold">Saved Sheets</h3>
                       <p className="mt-1 text-sm text-foreground/70">
                         {characters.length === 0
                           ? "No saved characters yet."
@@ -307,10 +307,10 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                   ) : null}
                 </section>
 
-                <section className="border rounded-lg border border-border bg-surface-muted p-4">
+                <section className="border rounded-xl border border-border bg-surface-muted p-5">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <h3 className="text-base font-bold">Campaign Access</h3>
+                      <h3 className="text-lg font-bold">Campaign Access</h3>
                       <p className="mt-1 text-sm text-foreground/70">
                         Open a saved sheet, enter the GM&apos;s invite code, then join.
                       </p>
@@ -363,10 +363,10 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                   ) : null}
                 </section>
 
-                <section className="border rounded-lg border border-border bg-surface-muted p-4">
+                <section className="border rounded-xl border border-border bg-surface-muted p-5">
                   <div className="flex flex-col gap-2">
                     <div>
-                      <h3 className="text-base font-bold">Recipe Library</h3>
+                      <h3 className="text-lg font-bold">Recipe Library</h3>
                       <p className="mt-1 text-sm text-foreground/70">
                         Create custom recipes and decide which ones this character can use.
                       </p>
@@ -470,10 +470,10 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                   </div>
                 </section>
 
-                <section className="border rounded-lg border border-border bg-surface-muted p-4">
+                <section className="border rounded-xl border border-border bg-surface-muted p-5">
                   <div className="flex flex-col gap-2">
                     <div>
-                      <h3 className="text-base font-bold">Card Library</h3>
+                      <h3 className="text-lg font-bold">Card Library</h3>
                       <p className="mt-1 text-sm text-foreground/70">
                         Create custom cards and add them to this character&apos;s deck.
                       </p>
@@ -544,10 +544,10 @@ export function WorkspacePanel(w: ChromaWorkspace) {
                 </section>
               </div>
 
-              <section className="border rounded-lg border border-border bg-surface-muted p-4">
+              <section className="border rounded-xl border border-border bg-surface-muted p-5">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="text-base font-bold">Discord Link</h3>
+                    <h3 className="text-lg font-bold">Discord Link</h3>
                     <p className="mt-1 text-sm text-foreground/70">
                       {discordProfile?.discord_username
                         ? `Linked as ${discordProfile.discord_username}. Generate a fresh code only when you need it.`

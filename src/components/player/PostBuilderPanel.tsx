@@ -258,7 +258,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
   } = w;
   return (
     <>
-        <section className="surface-shadow rounded-lg border border-border bg-surface p-4">
+        <section className="surface-shadow rounded-xl border border-border bg-surface p-5">
           <div className="flex flex-col gap-3 border-b border-border pb-4">
             <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -303,7 +303,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
 
           <div className="mt-4 grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
           <div className="border border-border bg-[#fcfaf6] p-4">
-            <h3 className="text-base font-bold">Build</h3>
+            <h3 className="text-lg font-bold">Build</h3>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <Button
                 onClick={() => changePostType("act")}
@@ -551,7 +551,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
           <div className="border border-border bg-[#fcfaf6] p-4">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base font-bold">Fuel</h3>
+                <h3 className="text-lg font-bold">Fuel</h3>
                 <p className="mt-1 text-sm text-foreground/70">
                   Select the Core Word, Card Words, and Gear Words your post is using.
                 </p>
@@ -654,7 +654,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
           <div className="border border-accent bg-foreground p-4 text-accent-ink xl:col-span-2">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h3 className="text-base font-bold">Review And Queue</h3>
+                <h3 className="text-lg font-bold">Review And Queue</h3>
                 <p className="mt-1 text-sm text-foreground/60">
                   Confirm the post after you finish selecting words and gear.
                 </p>

@@ -258,11 +258,11 @@ export function GMPanel(w: ChromaWorkspace) {
     visibleSceneWords,
   } = w;
   return (
-          <section className="grid gap-4 surface-shadow rounded-lg border border-border bg-surface p-4 xl:grid-cols-[0.9fr_1.1fr]">
+          <section className="grid gap-4 surface-shadow rounded-xl border border-border bg-surface p-5 xl:grid-cols-[0.9fr_1.1fr]">
             <div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h2 className="text-base font-bold">Campaign Sheet / GM Tools</h2>
+                  <h2 className="text-lg font-bold">Campaign Sheet / GM Tools</h2>
                   <p className="mt-1 text-sm text-foreground/70">
                     {campaignNotice || "Create or load the active campaign scene."}
                   </p>

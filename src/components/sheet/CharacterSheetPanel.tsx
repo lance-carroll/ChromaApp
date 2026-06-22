@@ -261,7 +261,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
   return (
     <>
         <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="surface-shadow rounded-lg border border-border bg-surface p-4">
+          <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
             <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,180px)]">
               <label className="grid min-w-0 gap-1">
                 <span className="text-sm font-semibold text-foreground/70">Name</span>
@@ -299,9 +299,9 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
         </section>
 
         <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="surface-shadow rounded-lg border border-border bg-surface p-4">
+          <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <h2 className="text-base font-bold">Core Words</h2>
+              <h2 className="text-lg font-bold">Core Words</h2>
               <span className="text-sm text-foreground/70">{coreWords.length}/4</span>
             </div>
             <div className="grid gap-3 md:grid-cols-2">
@@ -339,8 +339,8 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-            <label className="grid gap-1 surface-shadow rounded-lg border border-border bg-surface p-4">
-              <span className="text-base font-bold">Tie</span>
+            <label className="grid gap-1 surface-shadow rounded-xl border border-border bg-surface p-5">
+              <span className="text-lg font-bold">Tie</span>
               <textarea
                 className="min-h-24 resize-y border border-border px-3 py-2 outline-none focus:border-accent"
                 value={tie}
@@ -377,9 +377,9 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
           summary={`${hand.length}/4 in hand, ${deck.length} in deck, ${discard.length} discarded.`}
         >
           <section className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
-            <div className="surface-shadow rounded-lg border border-border bg-surface p-4">
+            <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="text-base font-bold">Hand</h2>
+                <h2 className="text-lg font-bold">Hand</h2>
                 <span className="text-sm text-foreground/70">{hand.length}/4</span>
               </div>
               <div className="grid gap-2">
@@ -397,9 +397,9 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
               </div>
             </div>
 
-            <div className="surface-shadow rounded-lg border border-border bg-surface p-4">
+            <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="text-base font-bold">Deck</h2>
+                <h2 className="text-lg font-bold">Deck</h2>
                 <button
                   type="button"
                   className="h-9 border border-border px-3 text-sm font-semibold hover:bg-surface-muted"
@@ -412,8 +412,8 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
               <p className="mt-2 text-sm text-foreground/70">Cards remaining</p>
             </div>
 
-            <div className="surface-shadow rounded-lg border border-border bg-surface p-4">
-              <h2 className="mb-3 text-base font-bold">Discard</h2>
+            <div className="surface-shadow rounded-xl border border-border bg-surface p-5">
+              <h2 className="mb-3 text-lg font-bold">Discard</h2>
               <div className="flex flex-wrap gap-2">
                 {discard.length === 0 ? (
                   <p className="text-sm text-foreground/70">No cards discarded.</p>
