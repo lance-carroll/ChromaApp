@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/next/dist/bin/next dev",
-    "build": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/next/dist/bin/next build",
-    "start": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" node_modules/next/dist/bin/next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint",
-    "bot:register": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" bot/register-commands.mjs",
-    "bot:dev": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" bot/index.mjs",
-    "bot:start": "\"C:\\Users\\lcarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe\" bot/index.mjs"
+    "bot:register": "node bot/register-commands.mjs",
+    "bot:dev": "node bot/index.mjs",
+    "bot:start": "node bot/index.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
