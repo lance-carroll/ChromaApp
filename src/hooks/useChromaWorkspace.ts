@@ -2414,3 +2414,5 @@ export function useChromaWorkspace() {
     visibleSceneWords,
   };
 }
+
+export type ChromaWorkspace = ReturnType<typeof useChromaWorkspace>;
