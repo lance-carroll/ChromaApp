@@ -20,11 +20,13 @@ export default function Home() {
         <div className="flex flex-col gap-6">
           {session ? (
             <>
-              <CharacterVitals {...workspace} />
               {viewMode === "gm" ? (
                 <GMPanel {...workspace} />
               ) : (
-                <PostBuilderPanel {...workspace} />
+                <>
+                  <CharacterVitals {...workspace} />
+                  <PostBuilderPanel {...workspace} />
+                </>
               )}
               <WorkspacePanel {...workspace} />
               <CharacterSheetPanel {...workspace} />
