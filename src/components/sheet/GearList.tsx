@@ -82,9 +82,16 @@ export function GearList({
                 key={item.id}
                 className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-surface-muted px-3 py-2"
               >
-                <span className="min-w-0 flex-1 truncate font-semibold">
-                  {item.name || "Unnamed gear"}
-                </span>
+                <div className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">
+                    {item.name || "Unnamed gear"}
+                  </span>
+                  {item.tags.length > 0 ? (
+                    <span className="block truncate text-xs text-foreground/60">
+                      {item.tags.join(", ")}
+                    </span>
+                  ) : null}
+                </div>
                 {item.chroma ? (
                   <span
                     className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${colorStyles[item.chroma]}`}

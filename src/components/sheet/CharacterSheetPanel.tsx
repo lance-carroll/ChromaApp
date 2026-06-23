@@ -3,7 +3,6 @@
 import type { ChromaWorkspace } from "@/hooks/useChromaWorkspace";
 import { GearList } from "@/components/sheet/GearList";
 import { CollapsibleSection, Surface } from "@/components/ui";
-import { colorStyles } from "@/lib/chroma";
 
 export function CharacterSheetPanel(w: ChromaWorkspace) {
   const {
@@ -352,44 +351,6 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
           </div>
           <GearList items={gear} setItems={setGear} />
         </Surface>
-
-        <section className="grid gap-4">
-          <h2 className="text-lg font-bold">Cards</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Surface>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h3 className="font-bold text-foreground/80">Deck</h3>
-                <button
-                  type="button"
-                  className="h-9 border border-border px-3 text-sm font-semibold hover:bg-surface-muted"
-                  onClick={drawCard}
-                >
-                  Draw
-                </button>
-              </div>
-              <p className="font-mono text-4xl font-black">{deck.length}</p>
-              <p className="mt-2 text-sm text-foreground/70">Cards remaining</p>
-            </Surface>
-
-            <Surface>
-              <h3 className="mb-3 font-bold text-foreground/80">Discard</h3>
-              <div className="flex flex-wrap gap-2">
-                {discard.length === 0 ? (
-                  <p className="text-sm text-foreground/70">No cards discarded.</p>
-                ) : (
-                  discard.map((card) => (
-                    <span
-                      key={card.word}
-                      className={`border px-2 py-1 text-sm ${colorStyles[card.color]}`}
-                    >
-                      {card.word}
-                    </span>
-                  ))
-                )}
-              </div>
-            </Surface>
-          </div>
-        </section>
 
         <CollapsibleSection title="Current sheet payload" summary="Raw debug data, not needed for play.">
           <pre className="max-h-80 overflow-auto text-xs leading-5">
