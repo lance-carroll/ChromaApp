@@ -321,7 +321,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
             </div>
           </div>
 
-          <div className="mt-4 grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+          <div className="mt-4 grid gap-4">
           <div className="border border-border bg-[#fcfaf6] p-4">
             <h3 className="text-lg font-bold">Build</h3>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -353,6 +353,95 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
                   </button>
                 );
               })}
+            </div>
+
+            <div className="mt-4 border-t border-border pt-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h4 className="text-sm font-bold uppercase tracking-wide text-foreground/70">
+                  Fuel
+                </h4>
+                <span className="text-xs font-semibold text-foreground/60">
+                  {hand.length} cards in hand
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-foreground/70">
+                Select the Core Word, Card Words, and Gear Words your post is using.
+              </p>
+
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {coreWords.map((coreWord) => (
+                  <button
+                    type="button"
+                    key={`builder-core-${coreWord.id}`}
+                    className={`border px-3 py-2 text-left hover:bg-surface-muted ${
+                      selectedCoreWordId === coreWord.id
+                        ? "border-accent bg-accent/10"
+                        : "border-border bg-surface"
+                    }`}
+                    onClick={() =>
+                      setSelectedCoreWordId(
+                        selectedCoreWordId === coreWord.id ? null : coreWord.id,
+                      )
+                    }
+                    disabled={postType !== "act"}
+                  >
+                    <span className="block font-bold">{coreWord.word}</span>
+                    <span className="mt-1 block text-xs text-foreground/70">
+                      {coreWord.tags}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                {hand.length === 0 ? (
+                  <p className="text-sm text-foreground/70">No cards in hand.</p>
+                ) : (
+                  hand.map((card) => (
+                    <button
+                      type="button"
+                      key={`builder-card-${card.word}`}
+                      className={`border px-3 py-2 text-left font-semibold hover:brightness-95 ${
+                        selectedCardWords.includes(card.word)
+                          ? "ring-2 ring-accent"
+                          : ""
+                      } ${colorStyles[card.color]}`}
+                      onClick={() => toggleSelectedCard(card.word)}
+                      disabled={postType === "breathe" || postType === "ghost"}
+                    >
+                      <span className="block">{card.word}</span>
+                      <span className="text-xs uppercase">{card.color}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {gear.length === 0 ? (
+                  <p className="text-sm text-foreground/70">No gear listed.</p>
+                ) : (
+                  gear.map((entry) => (
+                    <button
+                      type="button"
+                      key={`builder-gear-${entry.id}`}
+                      className={`border px-3 py-2 text-left hover:bg-surface-muted ${
+                        selectedGearIds.includes(entry.id)
+                          ? "border-accent bg-accent/10"
+                          : "border-border bg-surface"
+                      }`}
+                      onClick={() => toggleSelectedGear(entry.id)}
+                      disabled={postType === "breathe" || postType === "ghost"}
+                    >
+                      <span className="block text-sm font-semibold">
+                        {getGearLabel(entry)}
+                      </span>
+                      <span className="mt-1 block text-xs text-foreground/70">
+                        {getGearDetailText(entry) || "No tags or tracked state"}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
             </div>
 
             {postType === "act" || postType === "setup" ? (
@@ -589,110 +678,7 @@ export function PostBuilderPanel(w: ChromaWorkspace) {
 
           </div>
 
-          <div className="border border-border bg-[#fcfaf6] p-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h3 className="text-lg font-bold">Fuel</h3>
-                <p className="mt-1 text-sm text-foreground/70">
-                  Select the Core Word, Card Words, and Gear Words your post is using.
-                </p>
-              </div>
-              <span className="text-sm font-semibold text-foreground/80">
-                {hand.length} cards in hand
-              </span>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-sm font-bold uppercase tracking-wide text-foreground/70">
-                Core Words
-              </h3>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {coreWords.map((coreWord) => (
-                  <button
-                    type="button"
-                    key={`builder-core-${coreWord.id}`}
-                    className={`border px-3 py-2 text-left hover:bg-surface-muted ${
-                      selectedCoreWordId === coreWord.id
-                        ? "border-accent bg-accent/10"
-                        : "border-border bg-surface"
-                    }`}
-                    onClick={() =>
-                      setSelectedCoreWordId(
-                        selectedCoreWordId === coreWord.id ? null : coreWord.id,
-                      )
-                    }
-                    disabled={postType !== "act"}
-                  >
-                    <span className="block font-bold">{coreWord.word}</span>
-                    <span className="mt-1 block text-xs text-foreground/70">
-                      {coreWord.tags}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <h3 className="text-sm font-bold uppercase tracking-wide text-foreground/70">
-                Hand
-              </h3>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              {hand.length === 0 ? (
-                <p className="text-sm text-foreground/70">No cards in hand.</p>
-              ) : (
-                hand.map((card) => (
-                  <button
-                    type="button"
-                    key={`builder-card-${card.word}`}
-                    className={`border px-3 py-2 text-left font-semibold hover:brightness-95 ${
-                      selectedCardWords.includes(card.word)
-                        ? "ring-2 ring-accent"
-                        : ""
-                    } ${colorStyles[card.color]}`}
-                    onClick={() => toggleSelectedCard(card.word)}
-                    disabled={postType === "breathe" || postType === "ghost"}
-                  >
-                    <span className="block">{card.word}</span>
-                    <span className="text-xs uppercase">{card.color}</span>
-                  </button>
-                ))
-              )}
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <h3 className="text-sm font-bold uppercase tracking-wide text-foreground/70">
-                Gear
-              </h3>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {gear.length === 0 ? (
-                  <p className="text-sm text-foreground/70">No gear listed.</p>
-                ) : (
-                  gear.map((entry) => (
-                    <button
-                      type="button"
-                      key={`builder-gear-${entry.id}`}
-                      className={`border px-3 py-2 text-left hover:bg-surface-muted ${
-                        selectedGearIds.includes(entry.id)
-                          ? "border-accent bg-accent/10"
-                          : "border-border bg-surface"
-                      }`}
-                      onClick={() => toggleSelectedGear(entry.id)}
-                      disabled={postType === "breathe" || postType === "ghost"}
-                    >
-                      <span className="block text-sm font-semibold">
-                        {getGearLabel(entry)}
-                      </span>
-                      <span className="mt-1 block text-xs text-foreground/70">
-                        {getGearDetailText(entry) || "No tags or tracked state"}
-                      </span>
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="border border-accent bg-foreground p-4 text-accent-ink xl:col-span-2">
+          <div className="border border-accent bg-foreground p-4 text-accent-ink">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h3 className="text-lg font-bold">Review And Queue</h3>
