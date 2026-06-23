@@ -1,15 +1,193 @@
 "use client";
 
 import type { ChromaWorkspace } from "@/hooks/useChromaWorkspace";
-import { Button, CollapsibleSection, Surface, TextEntryList } from "@/components/ui";
-import { chromaNames, colorStyles, threatBucketByColor, threatBucketStyles } from "@/lib/chroma";
-import type { ThreatBucket } from "@/lib/chroma";
+import { Button, CollapsibleSection, GaugeBar, Surface, TextEntryList } from "@/components/ui";
+import {
+  chromaNames,
+  colorStyles,
+  oppositionTierHints,
+  oppositionTierLabels,
+  oppositionTierTones,
+  threatBucketByColor,
+  threatBucketStyles,
+  toneColorVars,
+} from "@/lib/chroma";
+import type { CampaignOppositionRow, OppositionTier, ThreatBucket } from "@/lib/chroma";
 
 function StatPill({ label, value }: { label: string; value: number }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-xs font-semibold text-foreground/80">
       {label} <span className="font-mono">{value}</span>
     </span>
+  );
+}
+
+function OppositionCard({
+  entry,
+  updateOpposition,
+  deleteOpposition,
+  addOppositionCondition,
+  updateOppositionCondition,
+  removeOppositionCondition,
+}: {
+  entry: CampaignOppositionRow;
+  updateOpposition: (id: string, updates: Partial<CampaignOppositionRow>) => void;
+  deleteOpposition: (id: string) => void;
+  addOppositionCondition: (entry: CampaignOppositionRow) => void;
+  updateOppositionCondition: (
+    entry: CampaignOppositionRow,
+    conditionId: number,
+    updates: Partial<CampaignOppositionRow["conditions"][number]>,
+  ) => void;
+  removeOppositionCondition: (entry: CampaignOppositionRow, conditionId: number) => void;
+}) {
+  const tone = toneColorVars[oppositionTierTones[entry.tier]];
+
+  return (
+    <div
+      className="grid gap-3 rounded-md border p-3"
+      style={{ borderColor: `color-mix(in srgb, ${tone} 40%, transparent)` }}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span
+              className="rounded-full border px-2 py-0.5 text-xs font-semibold uppercase tracking-wide"
+              style={{
+                borderColor: tone,
+                backgroundColor: `color-mix(in srgb, ${tone} 16%, transparent)`,
+                color: tone,
+              }}
+            >
+              {oppositionTierLabels[entry.tier]}
+            </span>
+            {entry.resolved ? (
+              <span className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+                Resolved
+              </span>
+            ) : null}
+          </div>
+          <input
+            className="mt-2 w-full min-w-0 rounded-md border border-border px-3 py-2 font-bold outline-none focus:border-accent"
+            value={entry.name}
+            onChange={(event) => updateOpposition(entry.id, { name: event.target.value })}
+          />
+          <p className="mt-1 text-xs text-foreground/60">{oppositionTierHints[entry.tier]}</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            className="h-9 text-xs"
+            onClick={() => updateOpposition(entry.id, { resolved: !entry.resolved })}
+          >
+            {entry.resolved ? "Reopen" : "Mark Resolved"}
+          </Button>
+          <Button
+            variant="danger"
+            className="h-9 text-xs"
+            onClick={() => deleteOpposition(entry.id)}
+          >
+            Remove
+          </Button>
+        </div>
+      </div>
+
+      {entry.tier === "threat" ? (
+        <div className="grid gap-2 sm:grid-cols-[1fr_100px]">
+          <GaugeBar
+            label="Segments"
+            value={entry.segments_current}
+            max={Math.max(entry.segments_max, 1)}
+            setValue={(value) =>
+              updateOpposition(entry.id, {
+                segments_current: value,
+                resolved: value >= entry.segments_max,
+              })
+            }
+            tone={oppositionTierTones.threat}
+          />
+          <label className="grid gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
+              Max
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={3}
+              className="min-w-0 rounded-md border border-border px-3 py-2 outline-none focus:border-accent"
+              value={entry.segments_max}
+              onChange={(event) =>
+                updateOpposition(entry.id, {
+                  segments_max: Math.max(1, Number(event.target.value)),
+                })
+              }
+            />
+          </label>
+        </div>
+      ) : null}
+
+      {entry.tier === "trial" ? (
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
+              Conditions ({entry.conditions.filter((condition) => condition.resolved).length}/
+              {entry.conditions.length})
+            </span>
+            <Button
+              variant="secondary"
+              className="h-8 text-xs"
+              onClick={() => addOppositionCondition(entry)}
+            >
+              + Condition
+            </Button>
+          </div>
+          {entry.conditions.map((condition) => (
+            <div key={condition.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={condition.resolved}
+                onChange={(event) =>
+                  updateOppositionCondition(entry, condition.id, { resolved: event.target.checked })
+                }
+              />
+              <input
+                className="min-w-0 flex-1 rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-accent"
+                placeholder="Sever its anchor chain"
+                value={condition.label}
+                onChange={(event) =>
+                  updateOppositionCondition(entry, condition.id, { label: event.target.value })
+                }
+              />
+              <label className="flex items-center gap-1 text-xs text-foreground/60">
+                <input
+                  type="checkbox"
+                  checked={condition.hidden}
+                  onChange={(event) =>
+                    updateOppositionCondition(entry, condition.id, { hidden: event.target.checked })
+                  }
+                />
+                Hidden
+              </label>
+              <button
+                type="button"
+                className="text-foreground/50 hover:text-foreground"
+                aria-label="Remove condition"
+                onClick={() => removeOppositionCondition(entry, condition.id)}
+              >
+                x
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <textarea
+        className="min-h-16 resize-y rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-accent"
+        placeholder="Notes - how it's framed, what it responds to"
+        value={entry.notes}
+        onChange={(event) => updateOpposition(entry.id, { notes: event.target.value })}
+      />
+    </div>
   );
 }
 
@@ -215,6 +393,12 @@ export function GMPanel(w: ChromaWorkspace) {
     getCharacterLabel,
     loadRosterCharacters,
     loadScenesAndBeats,
+    createOpposition,
+    updateOpposition,
+    deleteOpposition,
+    addOppositionCondition,
+    updateOppositionCondition,
+    removeOppositionCondition,
     createCampaign,
     saveCampaign,
     newCampaignDraft,
@@ -256,6 +440,7 @@ export function GMPanel(w: ChromaWorkspace) {
     activeScene,
     activeBeat,
     visibleCampaignPosts,
+    visibleSceneOpposition,
     activeSheetLabel,
     activeCampaignLabel,
     activeSceneLabel,
@@ -553,6 +738,50 @@ export function GMPanel(w: ChromaWorkspace) {
                   New Beat
                 </Button>
               </div>
+            </div>
+          </Surface>
+
+          <Surface>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold uppercase tracking-wide text-foreground/70">
+                  Opposition
+                </h3>
+                <p className="mt-1 text-sm text-foreground/70">
+                  Obstacles, Threats, and Trials for {activeSceneLabel}.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {(Object.keys(oppositionTierLabels) as OppositionTier[]).map((tier) => (
+                  <Button
+                    key={`add-opposition-${tier}`}
+                    variant="secondary"
+                    className="h-9 text-xs"
+                    onClick={() => createOpposition(tier)}
+                  >
+                    + {oppositionTierLabels[tier]}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div className="mt-3 grid gap-3">
+              {visibleSceneOpposition.length === 0 ? (
+                <p className="text-sm text-foreground/70">
+                  No Obstacles, Threats, or Trials framed for this scene yet.
+                </p>
+              ) : (
+                visibleSceneOpposition.map((entry) => (
+                  <OppositionCard
+                    key={entry.id}
+                    entry={entry}
+                    updateOpposition={updateOpposition}
+                    deleteOpposition={deleteOpposition}
+                    addOppositionCondition={addOppositionCondition}
+                    updateOppositionCondition={updateOppositionCondition}
+                    removeOppositionCondition={removeOppositionCondition}
+                  />
+                ))
+              )}
             </div>
           </Surface>
 

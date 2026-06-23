@@ -102,6 +102,30 @@ export type CampaignBeatRow = {
   updated_at: string;
 };
 
+export type OppositionTier = "obstacle" | "threat" | "trial";
+
+export type OppositionCondition = {
+  id: number;
+  label: string;
+  resolved: boolean;
+  hidden: boolean;
+};
+
+export type CampaignOppositionRow = {
+  id: string;
+  campaign_id: string;
+  scene_id: string | null;
+  owner_id: string;
+  name: string;
+  tier: OppositionTier;
+  notes: string;
+  segments_current: number;
+  segments_max: number;
+  conditions: OppositionCondition[];
+  resolved: boolean;
+  updated_at: string;
+};
+
 export type CampaignPostStatus = "pending" | "resolved" | "rejected";
 
 export type StoredPostType = "act" | "breathe" | "setup" | "ghost";

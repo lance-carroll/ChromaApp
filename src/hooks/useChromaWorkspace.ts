@@ -26,6 +26,7 @@ import type {
   Card,
   CampaignBeatRow,
   CampaignCharacterLink,
+  CampaignOppositionRow,
   CampaignPostRow,
   CampaignRow,
   CampaignSceneRow,
@@ -38,6 +39,8 @@ import type {
   GearItem,
   JoinedCampaignInviteRow,
   LinkCodeRow,
+  OppositionCondition,
+  OppositionTier,
   PostType,
   ProfileRow,
   RecipeRow,
@@ -67,6 +70,7 @@ export function useChromaWorkspace() {
   const [campaignLinks, setCampaignLinks] = useState<CampaignCharacterLink[]>([]);
   const [campaignScenes, setCampaignScenes] = useState<CampaignSceneRow[]>([]);
   const [campaignBeats, setCampaignBeats] = useState<CampaignBeatRow[]>([]);
+  const [campaignOpposition, setCampaignOpposition] = useState<CampaignOppositionRow[]>([]);
   const [campaignPosts, setCampaignPosts] = useState<CampaignPostRow[]>([]);
   const [playerQueuedPosts, setPlayerQueuedPosts] = useState<CampaignPostRow[]>([]);
   const [campaignId, setCampaignId] = useState<string | null>(null);
@@ -295,6 +299,10 @@ export function useChromaWorkspace() {
         (post) => post.campaign_id === campaignId && post.status === "pending",
       )
     : [];
+
+  const visibleSceneOpposition = sceneId
+    ? campaignOpposition.filter((entry) => entry.scene_id === sceneId)
+    : campaignOpposition.filter((entry) => entry.scene_id === null);
 
   const activeSheetLabel = characterId ? name || "Unnamed sheet" : "Unsaved draft";
   const activeCampaignLabel = campaignId ? campaignName || "Campaign open" : "No campaign";
@@ -1347,7 +1355,7 @@ export function useChromaWorkspace() {
   }
 
   async function loadScenesAndBeats(nextCampaignId: string) {
-    const [{ data: scenesData, error: scenesError }, { data: beatsData }] =
+    const [{ data: scenesData, error: scenesError }, { data: beatsData }, { data: oppositionData }] =
       await Promise.all([
         supabase
           .from("campaign_scenes")
@@ -1359,12 +1367,18 @@ export function useChromaWorkspace() {
           .select("*")
           .eq("campaign_id", nextCampaignId)
           .order("beat_number", { ascending: true }),
+        supabase
+          .from("campaign_opposition")
+          .select("*")
+          .eq("campaign_id", nextCampaignId)
+          .order("created_at", { ascending: true }),
       ]);
 
     if (scenesError) {
       setCampaignNotice("Run the updated supabase/campaigns.sql for scenes and beats.");
       setCampaignScenes([]);
       setCampaignBeats([]);
+      setCampaignOpposition([]);
       return;
     }
 
@@ -1372,6 +1386,7 @@ export function useChromaWorkspace() {
     const beats = (beatsData ?? []) as CampaignBeatRow[];
     setCampaignScenes(scenes);
     setCampaignBeats(beats);
+    setCampaignOpposition((oppositionData ?? []) as CampaignOppositionRow[]);
 
     const nextScene = scenes.find((scene) => scene.is_active) ?? scenes[0];
     if (nextScene) {
@@ -1396,6 +1411,81 @@ export function useChromaWorkspace() {
       setSceneSummary("");
       setBeatPrompt("");
     }
+  }
+
+  async function createOpposition(tier: OppositionTier) {
+    if (!session || !campaignId) {
+      return;
+    }
+
+    const defaults: Record<OppositionTier, Partial<CampaignOppositionRow>> = {
+      obstacle: { segments_max: 0 },
+      threat: { segments_max: 2 },
+      trial: { segments_max: 0 },
+    };
+
+    const { data, error } = await supabase
+      .from("campaign_opposition")
+      .insert({
+        campaign_id: campaignId,
+        scene_id: sceneId,
+        owner_id: session.user.id,
+        name: tier === "trial" ? "New Trial" : tier === "threat" ? "New Threat" : "New Obstacle",
+        tier,
+        ...defaults[tier],
+      })
+      .select("*")
+      .single();
+
+    if (error) {
+      setCampaignNotice(error.message);
+      return;
+    }
+
+    setCampaignOpposition((current) => [...current, data as CampaignOppositionRow]);
+  }
+
+  async function updateOpposition(id: string, updates: Partial<CampaignOppositionRow>) {
+    setCampaignOpposition((current) =>
+      current.map((entry) => (entry.id === id ? { ...entry, ...updates } : entry)),
+    );
+
+    const { error } = await supabase.from("campaign_opposition").update(updates).eq("id", id);
+    if (error) {
+      setCampaignNotice(error.message);
+    }
+  }
+
+  async function deleteOpposition(id: string) {
+    setCampaignOpposition((current) => current.filter((entry) => entry.id !== id));
+    const { error } = await supabase.from("campaign_opposition").delete().eq("id", id);
+    if (error) {
+      setCampaignNotice(error.message);
+    }
+  }
+
+  function addOppositionCondition(opposition: CampaignOppositionRow) {
+    const nextConditions: OppositionCondition[] = [
+      ...opposition.conditions,
+      { id: Date.now(), label: "", resolved: false, hidden: false },
+    ];
+    updateOpposition(opposition.id, { conditions: nextConditions });
+  }
+
+  function updateOppositionCondition(
+    opposition: CampaignOppositionRow,
+    conditionId: number,
+    updates: Partial<OppositionCondition>,
+  ) {
+    const nextConditions = opposition.conditions.map((condition) =>
+      condition.id === conditionId ? { ...condition, ...updates } : condition,
+    );
+    updateOpposition(opposition.id, { conditions: nextConditions });
+  }
+
+  function removeOppositionCondition(opposition: CampaignOppositionRow, conditionId: number) {
+    const nextConditions = opposition.conditions.filter((condition) => condition.id !== conditionId);
+    updateOpposition(opposition.id, { conditions: nextConditions });
   }
 
   async function createCampaign() {
@@ -2206,6 +2296,8 @@ export function useChromaWorkspace() {
     setCampaignScenes,
     campaignBeats,
     setCampaignBeats,
+    campaignOpposition,
+    setCampaignOpposition,
     campaignPosts,
     setCampaignPosts,
     playerQueuedPosts,
@@ -2372,6 +2464,12 @@ export function useChromaWorkspace() {
     getCharacterLabel,
     loadRosterCharacters,
     loadScenesAndBeats,
+    createOpposition,
+    updateOpposition,
+    deleteOpposition,
+    addOppositionCondition,
+    updateOppositionCondition,
+    removeOppositionCondition,
     createCampaign,
     saveCampaign,
     newCampaignDraft,
@@ -2414,6 +2512,7 @@ export function useChromaWorkspace() {
     activeScene,
     activeBeat,
     visibleCampaignPosts,
+    visibleSceneOpposition,
     activeSheetLabel,
     activeCampaignLabel,
     activeSceneLabel,

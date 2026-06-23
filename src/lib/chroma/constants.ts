@@ -1,6 +1,7 @@
 import type {
   ActGradeName,
   Card,
+  OppositionTier,
   PostType,
   Recipe,
   SheetPayload,
@@ -88,6 +89,24 @@ export const postTypeTones: Record<PostType, Tone> = {
   breathe: "Blue",
   setup: "Gold",
   ghost: "Violet",
+};
+
+export const oppositionTierLabels: Record<OppositionTier, string> = {
+  obstacle: "Obstacle",
+  threat: "Threat",
+  trial: "Trial",
+};
+
+export const oppositionTierTones: Record<OppositionTier, Tone> = {
+  obstacle: "Gold",
+  threat: "Red",
+  trial: "Violet",
+};
+
+export const oppositionTierHints: Record<OppositionTier, string> = {
+  obstacle: "Resolves on one Hit. A locked door, a guard, a collapsing bridge.",
+  threat: "A 2-3 segment progress track. Hit fills 1, Strong Hit fills 2, Breakthrough clears it.",
+  trial: "2-4 conditions, resolved in any order across multiple Beats. Hide some behind Discovery.",
 };
 
 export const defaultThreat: ThreatPool = {

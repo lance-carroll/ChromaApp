@@ -706,3 +706,34 @@ drop trigger if exists discord_account_link_codes_set_updated_at on public.disco
 create trigger discord_account_link_codes_set_updated_at
 before update on public.discord_account_link_codes
 for each row execute function public.set_updated_at();
+
+-- Opposition: Obstacles, Threats, and Trials (SRD "Opposition" section). GM-only
+-- management tool, scoped to a scene so it can be framed and resolved per Beat.
+create table if not exists public.campaign_opposition (
+  id uuid primary key default gen_random_uuid(),
+  campaign_id uuid not null references public.campaigns(id) on delete cascade,
+  scene_id uuid references public.campaign_scenes(id) on delete cascade,
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  name text not null default 'New Opposition',
+  tier text not null default 'obstacle' check (tier in ('obstacle', 'threat', 'trial')),
+  notes text not null default '',
+  segments_current integer not null default 0,
+  segments_max integer not null default 0,
+  conditions jsonb not null default '[]'::jsonb,
+  resolved boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.campaign_opposition enable row level security;
+
+drop policy if exists "Opposition managed by campaign GM" on public.campaign_opposition;
+create policy "Opposition managed by campaign GM"
+on public.campaign_opposition for all
+using (public.is_campaign_owner(campaign_id))
+with check (public.is_campaign_owner(campaign_id));
+
+drop trigger if exists campaign_opposition_set_updated_at on public.campaign_opposition;
+create trigger campaign_opposition_set_updated_at
+before update on public.campaign_opposition
+for each row execute function public.set_updated_at();
