@@ -737,3 +737,13 @@ drop trigger if exists campaign_opposition_set_updated_at on public.campaign_opp
 create trigger campaign_opposition_set_updated_at
 before update on public.campaign_opposition
 for each row execute function public.set_updated_at();
+
+-- Hidden Tracks: Pressure (rising danger) and Discovery (understanding).
+-- "Hidden" here means the GM panel is the only UI that renders these numbers
+-- (same convention as Threat) - not a DB-level guarantee, since joined players
+-- already receive the full campaigns row via the existing campaigns select(*).
+alter table public.campaigns
+  add column if not exists pressure_current integer not null default 0,
+  add column if not exists pressure_max integer not null default 4 check (pressure_max >= 1),
+  add column if not exists discovery_current integer not null default 0,
+  add column if not exists discovery_max integer not null default 4 check (discovery_max >= 1);

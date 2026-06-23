@@ -253,6 +253,10 @@ export function GMPanel(w: ChromaWorkspace) {
     setCampaignSceneWords,
     threat,
     setThreat,
+    pressureCurrent,
+    pressureMax,
+    discoveryCurrent,
+    discoveryMax,
     campaignBusy,
     setCampaignBusy,
     campaignNotice,
@@ -407,6 +411,10 @@ export function GMPanel(w: ChromaWorkspace) {
     updateSceneWord,
     removeSceneWord,
     adjustThreat,
+    adjustHiddenTrack,
+    setHiddenTrackMax,
+    triggerAndResetTrack,
+    revealHiddenTrialConditions,
     clampChallengeRating,
     saveCampaignChallengeRating,
     saveSceneChallengeRating,
@@ -865,6 +873,67 @@ export function GMPanel(w: ChromaWorkspace) {
               </div>
             </Surface>
           </div>
+
+          <Surface>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-foreground/70">
+              Hidden Tracks
+            </h3>
+            <p className="mt-1 text-sm text-foreground/70">
+              Players see symptoms, not numbers. Trigger when a track fills.
+            </p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              {(["pressure", "discovery"] as const).map((track) => {
+                const current = track === "pressure" ? pressureCurrent : discoveryCurrent;
+                const max = track === "pressure" ? pressureMax : discoveryMax;
+                const tone = track === "pressure" ? "Red" : "Blue";
+                const isFull = current >= max;
+
+                return (
+                  <div key={track} className="grid gap-2 rounded-md border border-border p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-bold capitalize">{track}</span>
+                      <label className="flex items-center gap-1 text-xs text-foreground/60">
+                        Max
+                        <input
+                          type="number"
+                          min={1}
+                          className="w-14 min-w-0 rounded-md border border-border px-2 py-1 outline-none focus:border-accent"
+                          value={max}
+                          onChange={(event) =>
+                            setHiddenTrackMax(track, Number(event.target.value))
+                          }
+                        />
+                      </label>
+                    </div>
+                    <GaugeBar
+                      label={track === "pressure" ? "Rising danger" : "Understanding"}
+                      value={current}
+                      max={max}
+                      setValue={(value) => adjustHiddenTrack(track, value - current)}
+                      tone={tone}
+                      compact
+                    />
+                    {isFull ? (
+                      <Button
+                        variant="primary"
+                        className="h-9 text-xs"
+                        onClick={() => triggerAndResetTrack(track)}
+                      >
+                        {track === "pressure" ? "Trigger Fallout & Reset" : "Reveal Truth & Reset"}
+                      </Button>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+            <Button
+              variant="secondary"
+              className="mt-3 h-9 text-xs"
+              onClick={revealHiddenTrialConditions}
+            >
+              Reveal Hidden Trial Conditions
+            </Button>
+          </Surface>
 
           <Surface>
             <h3 className="text-sm font-bold uppercase tracking-wide text-foreground/70">Roster</h3>

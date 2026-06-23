@@ -83,6 +83,10 @@ export function useChromaWorkspace() {
   const [postingWindow, setPostingWindow] = useState("24-48 hours");
   const [campaignSceneWords, setCampaignSceneWords] = useState<SceneWord[]>([]);
   const [threat, setThreat] = useState<ThreatPool>({ ...defaultThreat });
+  const [pressureCurrent, setPressureCurrent] = useState(0);
+  const [pressureMax, setPressureMax] = useState(4);
+  const [discoveryCurrent, setDiscoveryCurrent] = useState(0);
+  const [discoveryMax, setDiscoveryMax] = useState(4);
   const [campaignBusy, setCampaignBusy] = useState(false);
   const [campaignNotice, setCampaignNotice] = useState("");
   const [campaignDraftOpen, setCampaignDraftOpen] = useState(false);
@@ -1287,6 +1291,10 @@ export function useChromaWorkspace() {
     setPostingWindow(campaign.posting_window);
     setCampaignSceneWords(campaign.scene_words ?? []);
     setThreat(normalizeThreatPool(campaign.threat));
+    setPressureCurrent(campaign.pressure_current ?? 0);
+    setPressureMax(campaign.pressure_max ?? 4);
+    setDiscoveryCurrent(campaign.discovery_current ?? 0);
+    setDiscoveryMax(campaign.discovery_max ?? 4);
     setCampaignNotice(`Loaded ${campaign.name}.`);
     loadScenesAndBeats(campaign.id);
     loadRosterCharacters(campaign.id);
@@ -1505,6 +1513,10 @@ export function useChromaWorkspace() {
         posting_window: postingWindow,
         scene_words: campaignSceneWords,
         threat,
+        pressure_current: pressureCurrent,
+        pressure_max: pressureMax,
+        discovery_current: discoveryCurrent,
+        discovery_max: discoveryMax,
       })
       .select("*")
       .single();
@@ -1537,6 +1549,10 @@ export function useChromaWorkspace() {
         posting_window: postingWindow,
         scene_words: campaignSceneWords,
         threat,
+        pressure_current: pressureCurrent,
+        pressure_max: pressureMax,
+        discovery_current: discoveryCurrent,
+        discovery_max: discoveryMax,
       })
       .eq("id", campaignId)
       .select("*")
@@ -1573,6 +1589,10 @@ export function useChromaWorkspace() {
     setPostingWindow("24-48 hours");
     setCampaignSceneWords([]);
     setThreat({ ...defaultThreat });
+    setPressureCurrent(0);
+    setPressureMax(4);
+    setDiscoveryCurrent(0);
+    setDiscoveryMax(4);
     setCampaignNotice("Started a new campaign draft.");
   }
 
@@ -1664,6 +1684,83 @@ export function useChromaWorkspace() {
       await supabase
         .from("campaigns")
         .update({ threat: nextThreat })
+        .eq("id", campaignId);
+    }
+  }
+
+  async function adjustHiddenTrack(track: "pressure" | "discovery", delta: number) {
+    const max = track === "pressure" ? pressureMax : discoveryMax;
+    const current = track === "pressure" ? pressureCurrent : discoveryCurrent;
+    const next = Math.max(0, Math.min(max, current + delta));
+
+    if (track === "pressure") {
+      setPressureCurrent(next);
+    } else {
+      setDiscoveryCurrent(next);
+    }
+
+    if (campaignId) {
+      await supabase
+        .from("campaigns")
+        .update({ [`${track}_current`]: next })
+        .eq("id", campaignId);
+    }
+  }
+
+  async function setHiddenTrackMax(track: "pressure" | "discovery", nextMax: number) {
+    const clampedMax = Math.max(1, nextMax);
+
+    if (track === "pressure") {
+      setPressureMax(clampedMax);
+      setPressureCurrent((current) => Math.min(current, clampedMax));
+    } else {
+      setDiscoveryMax(clampedMax);
+      setDiscoveryCurrent((current) => Math.min(current, clampedMax));
+    }
+
+    if (campaignId) {
+      await supabase
+        .from("campaigns")
+        .update({ [`${track}_max`]: clampedMax })
+        .eq("id", campaignId);
+    }
+  }
+
+  async function revealHiddenTrialConditions() {
+    const revealedEntries = campaignOpposition.filter(
+      (entry) => entry.tier === "trial" && entry.conditions.some((condition) => condition.hidden),
+    );
+
+    await Promise.all(
+      revealedEntries.map((entry) =>
+        updateOpposition(entry.id, {
+          conditions: entry.conditions.map((condition) => ({ ...condition, hidden: false })),
+        }),
+      ),
+    );
+
+    setCampaignNotice(
+      revealedEntries.length > 0
+        ? `Revealed hidden conditions on ${revealedEntries.length} Trial${revealedEntries.length === 1 ? "" : "s"}.`
+        : "No hidden Trial conditions to reveal.",
+    );
+  }
+
+  async function triggerAndResetTrack(track: "pressure" | "discovery") {
+    if (track === "discovery") {
+      await revealHiddenTrialConditions();
+    }
+
+    if (track === "pressure") {
+      setPressureCurrent(0);
+    } else {
+      setDiscoveryCurrent(0);
+    }
+
+    if (campaignId) {
+      await supabase
+        .from("campaigns")
+        .update({ [`${track}_current`]: 0 })
         .eq("id", campaignId);
     }
   }
@@ -1842,6 +1939,10 @@ export function useChromaWorkspace() {
       posting_window: joinedInvite.posting_window,
       scene_words: joinedInvite.scene_words,
       threat: joinedInvite.threat,
+      pressure_current: 0,
+      pressure_max: 4,
+      discovery_current: 0,
+      discovery_max: 4,
       updated_at: joinedInvite.updated_at,
     };
     const nextLink: CampaignCharacterLink = {
@@ -2322,6 +2423,14 @@ export function useChromaWorkspace() {
     setCampaignSceneWords,
     threat,
     setThreat,
+    pressureCurrent,
+    setPressureCurrent,
+    pressureMax,
+    setPressureMax,
+    discoveryCurrent,
+    setDiscoveryCurrent,
+    discoveryMax,
+    setDiscoveryMax,
     campaignBusy,
     setCampaignBusy,
     campaignNotice,
@@ -2478,6 +2587,10 @@ export function useChromaWorkspace() {
     updateSceneWord,
     removeSceneWord,
     adjustThreat,
+    adjustHiddenTrack,
+    setHiddenTrackMax,
+    triggerAndResetTrack,
+    revealHiddenTrialConditions,
     clampChallengeRating,
     saveCampaignChallengeRating,
     saveSceneChallengeRating,

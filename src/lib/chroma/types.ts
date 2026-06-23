@@ -69,6 +69,10 @@ export type CampaignRow = {
   posting_window: string;
   scene_words: SceneWord[];
   threat: ThreatPool;
+  pressure_current: number;
+  pressure_max: number;
+  discovery_current: number;
+  discovery_max: number;
   updated_at: string;
 };
 
