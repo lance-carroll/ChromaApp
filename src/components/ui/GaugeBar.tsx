@@ -7,26 +7,32 @@ export function GaugeBar({
   max,
   setValue,
   tone = "accent",
+  compact = false,
 }: {
   label: string;
   value: number;
   max: number;
   setValue: (value: number) => void;
   tone?: Tone;
+  compact?: boolean;
 }) {
   const fillColor = toneColorVars[tone] ?? toneColorVars.accent;
 
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        <span
+          className={`font-semibold uppercase tracking-wide text-foreground/60 ${
+            compact ? "text-[10px]" : "text-xs"
+          }`}
+        >
           {label}
         </span>
-        <span className="font-mono text-xl font-bold">
+        <span className={`font-mono font-bold ${compact ? "text-sm" : "text-xl"}`}>
           {value}/{max}
         </span>
       </div>
-      <div className="mt-3 flex gap-1">
+      <div className={`flex gap-1 ${compact ? "mt-1" : "mt-3"}`}>
         {Array.from({ length: max }, (_, index) => {
           const filled = index < value;
 
@@ -39,7 +45,9 @@ export function GaugeBar({
                   ? `Clear ${label} segment ${index + 1}`
                   : `Fill ${label} up to ${index + 1}`
               }
-              className="h-8 flex-1 rounded-sm border transition-colors"
+              className={`flex-1 rounded-sm border transition-colors ${
+                compact ? "h-4" : "h-8"
+              }`}
               style={
                 filled
                   ? { backgroundColor: fillColor, borderColor: fillColor }

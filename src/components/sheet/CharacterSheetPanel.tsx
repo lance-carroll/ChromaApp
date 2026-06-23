@@ -2,7 +2,7 @@
 
 import type { ChromaWorkspace } from "@/hooks/useChromaWorkspace";
 import { GearList } from "@/components/sheet/GearList";
-import { Counter, CollapsibleSection, Surface, TextEntryList } from "@/components/ui";
+import { CollapsibleSection, Surface } from "@/components/ui";
 import { colorStyles } from "@/lib/chroma";
 
 export function CharacterSheetPanel(w: ChromaWorkspace) {
@@ -260,43 +260,36 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
   } = w;
   return (
     <>
-        <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <Surface>
-            <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,180px)]">
-              <label className="grid min-w-0 gap-1">
-                <span className="text-sm font-semibold text-foreground/70">Name</span>
-                <input
-                  className="min-w-0 border border-border px-3 py-2 text-2xl font-bold outline-none focus:border-accent"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                />
-              </label>
-              <label className="grid min-w-0 gap-1">
-                <span className="text-sm font-semibold text-foreground/70">
-                  Pronouns
-                </span>
-                <input
-                  className="min-w-0 border border-border px-3 py-2 outline-none focus:border-accent"
-                  value={pronouns}
-                  onChange={(event) => setPronouns(event.target.value)}
-                />
-              </label>
-            </div>
-            <label className="mt-3 grid gap-1">
-              <span className="text-sm font-semibold text-foreground/70">Concept</span>
-              <textarea
-                className="min-h-20 resize-y border border-border px-3 py-2 outline-none focus:border-accent"
-                value={concept}
-                onChange={(event) => setConcept(event.target.value)}
+        <Surface as="section">
+          <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,180px)]">
+            <label className="grid min-w-0 gap-1">
+              <span className="text-sm font-semibold text-foreground/70">Name</span>
+              <input
+                className="min-w-0 border border-border px-3 py-2 text-2xl font-bold outline-none focus:border-accent"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
               />
             </label>
-          </Surface>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Counter label="Focus" value={focus} max={3} setValue={setFocus} tone="Gold" />
-            <Counter label="Thread" value={thread} max={3} setValue={setThread} tone="Violet" />
+            <label className="grid min-w-0 gap-1">
+              <span className="text-sm font-semibold text-foreground/70">
+                Pronouns
+              </span>
+              <input
+                className="min-w-0 border border-border px-3 py-2 outline-none focus:border-accent"
+                value={pronouns}
+                onChange={(event) => setPronouns(event.target.value)}
+              />
+            </label>
           </div>
-        </section>
+          <label className="mt-3 grid gap-1">
+            <span className="text-sm font-semibold text-foreground/70">Concept</span>
+            <textarea
+              className="min-h-20 resize-y border border-border px-3 py-2 outline-none focus:border-accent"
+              value={concept}
+              onChange={(event) => setConcept(event.target.value)}
+            />
+          </label>
+        </Surface>
 
         <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
           <Surface>
@@ -350,23 +343,6 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
           </div>
         </section>
 
-        <section className="grid gap-4 lg:grid-cols-3">
-          <TextEntryList
-            title="Marks"
-            items={marks}
-            setItems={setMarks}
-            placeholder="shaken, watched, off-balance"
-            tone="Violet"
-          />
-          <TextEntryList
-            title="Wounds"
-            items={wounds}
-            setItems={setWounds}
-            placeholder="black ash, red hunger"
-            tone="Red"
-          />
-        </section>
-
         <Surface as="section">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="text-lg font-bold">Gear</h2>
@@ -379,27 +355,7 @@ export function CharacterSheetPanel(w: ChromaWorkspace) {
 
         <section className="grid gap-4">
           <h2 className="text-lg font-bold">Cards</h2>
-          <div className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
-            <Surface>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h3 className="font-bold text-foreground/80">Hand</h3>
-                <span className="text-sm text-foreground/70">{hand.length}/4</span>
-              </div>
-              <div className="grid gap-2">
-                {hand.map((card) => (
-                  <button
-                    type="button"
-                    key={card.word}
-                    className={`flex items-center justify-between border px-3 py-2 text-left font-semibold ${colorStyles[card.color]}`}
-                    onClick={() => discardCard(card.word)}
-                  >
-                    <span>{card.word}</span>
-                    <span className="text-xs uppercase">{card.color}</span>
-                  </button>
-                ))}
-              </div>
-            </Surface>
-
+          <div className="grid gap-4 sm:grid-cols-2">
             <Surface>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h3 className="font-bold text-foreground/80">Deck</h3>

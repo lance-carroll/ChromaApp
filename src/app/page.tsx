@@ -6,6 +6,7 @@ import { GMPanel } from "@/components/campaign/GMPanel";
 import { PostBuilderPanel } from "@/components/player/PostBuilderPanel";
 import { WorkspacePanel } from "@/components/workspace/WorkspacePanel";
 import { CharacterSheetPanel } from "@/components/sheet/CharacterSheetPanel";
+import { CharacterVitals } from "@/components/sheet/CharacterVitals";
 
 export default function Home() {
   const workspace = useChromaWorkspace();
@@ -19,6 +20,7 @@ export default function Home() {
         <div className="flex flex-col gap-6">
           {session ? (
             <>
+              <CharacterVitals {...workspace} />
               {viewMode === "gm" ? (
                 <GMPanel {...workspace} />
               ) : (
