@@ -29,7 +29,7 @@ export default function Home() {
                 </>
               )}
               <WorkspacePanel {...workspace} />
-              <CharacterSheetPanel {...workspace} />
+              {viewMode === "player" ? <CharacterSheetPanel {...workspace} /> : null}
             </>
           ) : (
             <div className="surface-shadow rounded-lg border border-border bg-surface p-6 text-sm text-foreground/70">
